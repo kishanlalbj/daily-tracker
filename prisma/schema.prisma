@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Gender {
+  male
+  female
+  other
+  unknown
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  first_name String
+  last_name String
+  email String
+  created_at DateTime @default(now())
+  gender Gender? @default(unknown)
+
+  healthTrackers HealthTracker[]
+  expenseTrackers ExpenseTracker[]
+}
+
+model HealthTracker {
+  id Int @id @default(autoincrement())
+  weight        Decimal @db.Decimal
+  height        Decimal @db.Decimal
+  waist         Decimal @db.Decimal
+  neck          Decimal @db.Decimal
+  bmi           Decimal @db.Decimal
+  bodyFat       Decimal @db.Decimal
+  bodyFatWeight Decimal @db.Decimal
+  userId        Int
+  user          User @relation(fields: [userId], references: [id])
+  created_at    DateTime @default(now())
+}
+
+
+model ExpenseTracker {
+  id            Int @id @default(autoincrement())
+  date          DateTime
+  expense_title String
+  amount        Decimal @db.Decimal
+  categoryId    Int
+  category      Category @relation(fields: [categoryId], references: [id])
+  userId        Int
+  user          User @relation(fields: [userId], references: [id])
+  created_at    DateTime @default(now())
+}
+
+
+model Category {
+  id                Int @id @default(autoincrement())
+  title             String @unique
+  created_at        DateTime @default(now())
+
+  expense_trackers  ExpenseTracker[]
+}
