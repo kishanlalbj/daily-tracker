@@ -1,5 +1,4 @@
 "use client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormField, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,8 +11,7 @@ import { z } from "zod";
 const MeasurementSchema = z.object({
   weight: z.coerce.number().min(30).max(150).positive(),
   waist: z.coerce.number().max(200).positive(),
-  neck: z.coerce.number().max(250).positive(),
-  height: z.coerce.number().max(300).positive()
+  neck: z.coerce.number().max(250).positive()
 });
 
 export type MeasurementData = z.infer<typeof MeasurementSchema>;
@@ -29,8 +27,7 @@ const MeasurementForm = ({ onFormSubmit, loading }: MeasurementFormProps) => {
     defaultValues: {
       weight: "",
       waist: "",
-      neck: "",
-      height: ""
+      neck: ""
     }
   });
 
@@ -43,102 +40,65 @@ const MeasurementForm = ({ onFormSubmit, loading }: MeasurementFormProps) => {
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <CardTitle>Measurement</CardTitle>
-        </CardHeader>
+      <Form {...form}>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4"
+        >
+          <FormField
+            name="weight"
+            {...control}
+            render={({ field }) => {
+              return (
+                <div className="space-y-2">
+                  <Label>Weight</Label>
+                  <Input placeholder="weight" type="number" {...field}></Input>
+                  <FormMessage></FormMessage>
+                </div>
+              );
+            }}
+          ></FormField>
 
-        <CardContent>
-          <Form {...form}>
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="grid grid-cols-1 md:grid-cols-2 gap-4"
+          <FormField
+            name="waist"
+            {...control}
+            render={({ field }) => {
+              return (
+                <div className="space-y-2">
+                  <Label>Waist</Label>
+                  <Input placeholder="Waist" type="number" {...field}></Input>
+                  <FormMessage></FormMessage>
+                </div>
+              );
+            }}
+          ></FormField>
+
+          <FormField
+            name="neck"
+            {...control}
+            render={({ field }) => {
+              return (
+                <div className="space-y-2">
+                  <Label>Neck</Label>
+                  <Input placeholder="Neck" type="number" {...field}></Input>
+                  <FormMessage></FormMessage>
+                </div>
+              );
+            }}
+          ></FormField>
+
+          <div className="md:col-span-2">
+            <Button
+              type="submit"
+              disabled={loading}
+              variant={loading ? "outline" : "default"}
+              className="w-full md:w-auto"
             >
-              <FormField
-                name="height"
-                {...control}
-                render={({ field }) => {
-                  return (
-                    <div className="space-y-2">
-                      <Label>Height</Label>
-                      <Input
-                        placeholder="height"
-                        type="number"
-                        {...field}
-                      ></Input>
-                      <FormMessage></FormMessage>
-                    </div>
-                  );
-                }}
-              ></FormField>
-
-              <FormField
-                name="weight"
-                {...control}
-                render={({ field }) => {
-                  return (
-                    <div className="space-y-2">
-                      <Label>Weight</Label>
-                      <Input
-                        placeholder="weight"
-                        type="number"
-                        {...field}
-                      ></Input>
-                      <FormMessage></FormMessage>
-                    </div>
-                  );
-                }}
-              ></FormField>
-
-              <FormField
-                name="waist"
-                {...control}
-                render={({ field }) => {
-                  return (
-                    <div className="space-y-2">
-                      <Label>Waist</Label>
-                      <Input
-                        placeholder="Waist"
-                        type="number"
-                        {...field}
-                      ></Input>
-                      <FormMessage></FormMessage>
-                    </div>
-                  );
-                }}
-              ></FormField>
-
-              <FormField
-                name="neck"
-                {...control}
-                render={({ field }) => {
-                  return (
-                    <div className="space-y-2">
-                      <Label>Neck</Label>
-                      <Input
-                        placeholder="Neck"
-                        type="number"
-                        {...field}
-                      ></Input>
-                      <FormMessage></FormMessage>
-                    </div>
-                  );
-                }}
-              ></FormField>
-
-              <div className="w-full">
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  variant={loading ? "outline" : "default"}
-                >
-                  Submit {loading ? <Spinner /> : ""}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+              Submit {loading ? <Spinner /> : ""}
+            </Button>
+          </div>
+        </form>
+      </Form>
     </>
   );
 };

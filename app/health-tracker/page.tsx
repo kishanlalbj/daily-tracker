@@ -11,7 +11,14 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card";
-import { BASE_API_URL, paths } from "@/constants";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
+import { paths } from "@/constants";
 import { PlusIcon } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Toaster, toast } from "sonner";
@@ -21,7 +28,6 @@ import { DataTable } from "@/components/data-table";
 type Measurement = {
   id?: string | number;
   created_at: string;
-  height: number;
   weight: number;
   bmi: number;
   bodyFat: number;
@@ -85,34 +91,6 @@ export default function Home() {
     []
   );
 
-  // const table = useReactTable({
-  //   data,
-  //   columns: defaultColumns,
-  //   pageCount: Math.ceil(data.length / pageSize),
-  //   state: {
-  //     sorting,
-  //     pagination: { pageIndex, pageSize }
-  //   },
-  //   onPaginationChange: (
-  //     updater:
-  //       | Partial<PaginationState>
-  //       | ((old: PaginationState) => PaginationState)
-  //   ) => {
-  //     if (typeof updater === "function") {
-  //       const next = updater({ pageIndex, pageSize });
-  //       setPageIndex(next.pageIndex ?? 0);
-  //       setPageSize(next.pageSize ?? pageSize);
-  //     } else {
-  //       setPageIndex(updater.pageIndex ?? 0);
-  //       setPageSize(updater.pageSize ?? pageSize);
-  //     }
-  //   },
-  //   getCoreRowModel: getCoreRowModel(),
-  //   getPaginationRowModel: getPaginationRowModel(),
-  //   onSortingChange: setSorting,
-  //   getSortedRowModel: getSortedRowModel()
-  // });
-
   const handleSubmit = async (data: MeasurementData) => {
     try {
       setLoading(true);
@@ -130,6 +108,8 @@ export default function Home() {
       toast.success("Data saved successfully", {
         richColors: true
       });
+
+      setShouldShowForm(false);
     } catch (err) {
       console.log(err);
     } finally {
@@ -169,13 +149,22 @@ export default function Home() {
         <h1>Health Tracker</h1>
       </div>
       <div className="flex items-center justify-end my-4">
-        <Button onClick={() => setShouldShowForm((prev) => !prev)}>
+        <Button onClick={() => setShouldShowForm(true)}>
           <PlusIcon /> Measurement
         </Button>
       </div>
-      {shouldShowForm && (
-        <MeasurementForm onFormSubmit={handleSubmit} loading={loading} />
-      )}
+
+      <Dialog open={shouldShowForm} onOpenChange={setShouldShowForm}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Add Measurement</DialogTitle>
+            <DialogDescription>
+              Enter your body measurements to track your health progress.
+            </DialogDescription>
+          </DialogHeader>
+          <MeasurementForm onFormSubmit={handleSubmit} loading={loading} />
+        </DialogContent>
+      </Dialog>
 
       <div>
         <h1 className="text-xl font-semibold"> Last 7 Days Average</h1>

@@ -19,8 +19,6 @@ const Page = () => {
     try {
       setLoading(true);
 
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
       const res = await fetch(`${paths.LOGIN_API}`, {
         method: "POST",
         headers: {
@@ -54,8 +52,26 @@ const Page = () => {
 
   const handleRegistrationSubmit = async (data: RegistrationData) => {
     try {
+      console.log(data);
       setLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const res = await fetch(`${paths.REGISTER_API}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        toast.error(result.message || "Registration failed", {
+          richColors: true,
+          position: "top-center"
+        });
+        return;
+      }
+
       handleToggleForm();
       toast.success("Registration successful", { richColors: true });
       console.log(data);

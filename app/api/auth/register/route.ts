@@ -1,5 +1,4 @@
 import prisma from "@/lib/prisma";
-import { User } from "@/types";
 import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -7,7 +6,7 @@ export const POST = async (req: NextRequest) => {
   try {
     const data = await req.json();
 
-    const { first_name, last_name, password, email, gender } = data as User;
+    const { firstName, lastName, password, email, gender, height } = data;
 
     const isExists = await prisma.user.findFirst({
       where: {
@@ -26,18 +25,25 @@ export const POST = async (req: NextRequest) => {
 
     const newUser = await prisma.user.create({
       data: {
-        first_name,
-        last_name,
+        first_name: firstName,
+        last_name: lastName,
         email,
         password: hashedPassword,
-        gender
+        gender,
+        height
       }
     });
+
+    // Convert Decimal to number for client
+    const serializedUser = {
+      ...newUser,
+      height: newUser.height ? Number(newUser.height) : null
+    };
 
     return NextResponse.json(
       {
         message: "User registered.",
-        user: newUser
+        user: serializedUser
       },
       { status: 201 }
     );

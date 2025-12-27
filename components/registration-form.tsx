@@ -34,7 +34,8 @@ const RegistrationSchema = z
       .min(6, "Confirm Password must be at least 6 characters long"),
     gender: z.enum(["male", "female", "other", "unknown"], {
       message: "Gender is required"
-    })
+    }),
+    height: z.number().min(30).max(250)
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
@@ -62,7 +63,8 @@ const RegistrationForm = ({
       email: "",
       password: "",
       confirmPassword: "",
-      gender: "unknown"
+      gender: "male",
+      height: 0
     }
   });
   const { control, handleSubmit } = form;
@@ -176,9 +178,9 @@ const RegistrationForm = ({
                   <div className="flex flex-col gap-2">
                     <Label>Gender</Label>
 
-                    <Select>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select Gender" {...field} />
+                        <SelectValue placeholder="Select Gender" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="male">Male</SelectItem>
@@ -186,6 +188,27 @@ const RegistrationForm = ({
                         <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
+                    <FormMessage />
+                  </div>
+                );
+              }}
+            ></FormField>
+
+            <FormField
+              name="height"
+              control={control}
+              render={({ field }) => {
+                return (
+                  <div className="flex flex-col gap-2">
+                    <Label>Height (cm)</Label>
+                    <Input
+                      type="number"
+                      placeholder="Height in centimeters"
+                      {...field}
+                      value={Number(field.value)}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    ></Input>
+                    <FormMessage />
                   </div>
                 );
               }}

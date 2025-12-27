@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
       // User data for gender
       prisma.user.findUnique({
         where: { id: userId },
-        select: { gender: true }
+        select: { gender: true, height: true }
       }),
 
       // Total expenses
@@ -149,13 +149,15 @@ export async function GET(req: NextRequest) {
       color: string;
     } | null = null;
 
-    if (latestHealthMetrics?.height && user?.gender) {
-      const heightInCm = Number(latestHealthMetrics.height);
+    if (user?.height && user?.gender) {
+      const heightInCm = Number(user.height);
       const heightInMeters = heightInCm / 100; // Convert cm to meters
-      const currentWeight = Number(latestHealthMetrics.weight);
+      const currentWeight = Number(latestHealthMetrics?.weight || 0);
 
-      idealWeight = calculateIdealWeight(heightInMeters, user.gender);
-      weightGoal = calculateWeightGoal(currentWeight, idealWeight);
+      if (currentWeight > 0) {
+        idealWeight = calculateIdealWeight(heightInMeters, user.gender);
+        weightGoal = calculateWeightGoal(currentWeight, idealWeight);
+      }
     }
 
     const dailyExpenses = getDailyExpenses(allExpenses, fromDate, toDate);

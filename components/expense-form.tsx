@@ -74,7 +74,7 @@ const ExpenseForm = ({ handleSubmit }: ExpenseFormProps) => {
     const getCategoryOptions = async () => {
       try {
         setIsCategoriesLoading(true);
-        const res = await fetch(`${BASE_API_URL}${paths.CATEGORY_API}`);
+        const res = await fetch(`${paths.CATEGORY_API}`);
 
         const resData = await res.json();
 

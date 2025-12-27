@@ -51,5 +51,8 @@ export const getCurrentUser = async () => {
   const { password, ...user } = userFromDb;
   console.log({ user });
 
-  return user;
+  return {
+    ...user,
+    height: user.height ? Number(user.height) : null
+  };
 };

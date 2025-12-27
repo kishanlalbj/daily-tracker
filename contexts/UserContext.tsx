@@ -7,7 +7,8 @@ type User = {
   first_name: string;
   last_name: string;
   email: string;
-  gender: string | null;
+  gender: "male" | "female" | "other" | "unknown" | null;
+  height: number | null;
   created_at: Date;
 } | null;
 

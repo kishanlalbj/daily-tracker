@@ -6,15 +6,29 @@ import prisma from "@/lib/prisma";
 export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
-    const userId = req.headers.get("x-user-id");
+    const userId = Number(req.headers.get("x-user-id"));
 
-    const { weight, waist, neck, height } = data;
+    const { weight, waist, neck } = data;
 
-    const bmi = calculateBMI(weight, height / 100);
+    // Get user's height and gender from User model
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { height: true, gender: true }
+    });
+
+    if (!user?.height) {
+      return NextResponse.json(
+        { message: "User height not set. Please update your profile." },
+        { status: 400 }
+      );
+    }
+
+    const heightInMeters = Number(user.height) / 100;
+    const bmi = calculateBMI(weight, heightInMeters);
 
     const bodyFat = calculateBodyFat({
-      gender: "male",
-      height: 173,
+      gender: user.gender === "female" ? "female" : "male",
+      height: Number(user.height),
       waist,
       neck
     });
@@ -23,14 +37,13 @@ export async function POST(req: NextRequest) {
 
     const res = await prisma.healthTracker.create({
       data: {
-        height,
         weight,
         waist,
         bmi,
         bodyFat,
         bodyFatWeight,
         neck,
-        userId: Number(userId)
+        userId
       }
     });
 

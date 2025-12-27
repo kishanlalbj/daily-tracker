@@ -27,6 +27,7 @@ model User {
   email String
   password String @default("password_not_set")
   gender Gender? @default(unknown)
+  height Decimal? @db.Decimal
   created_at DateTime @default(now())
 
   healthTrackers HealthTracker[]
@@ -36,7 +37,6 @@ model User {
 model HealthTracker {
   id Int @id @default(autoincrement())
   weight        Decimal @db.Decimal
-  height        Decimal @db.Decimal
   waist         Decimal @db.Decimal
   neck          Decimal @db.Decimal
   bmi           Decimal @db.Decimal

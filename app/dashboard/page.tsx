@@ -125,16 +125,16 @@ const DashboardPage = () => {
   }, [dateRange]);
 
   const bmiTrend = calculateTrendFromData(
-    data?.health?.trendDirections.bmi?.direction,
-    data?.health?.trendDirections.bmi?.change
+    data?.health?.trendDirections?.bmi?.direction,
+    data?.health?.trendDirections?.bmi?.change
   );
 
   const expensesTrend = calculateTrendFromData(
-    data?.expenses?.trendDirections.total?.direction,
-    data?.expenses?.trendDirections.total?.change
+    data?.expenses?.trendDirections?.total?.direction,
+    data?.expenses?.trendDirections?.total?.change
   );
 
-  const bmiCategory = getBMICategory(data?.health?.latest.bmi);
+  const bmiCategory = getBMICategory(data?.health?.latest?.bmi);
 
   return (
     <div className="mt-4 md:mt-8 lg:mt-12 px-2 sm:px-4 md:px-6">
@@ -207,7 +207,7 @@ const DashboardPage = () => {
             )
           }
           value={
-            data?.health?.latest.bodyFat
+            data?.health?.latest?.bodyFat
               ? `${data.health.latest.bodyFat}%`
               : "-"
           }
@@ -224,7 +224,7 @@ const DashboardPage = () => {
               )}
             </span>
           }
-          value={data?.health?.latest.bmi || ""}
+          value={data?.health?.latest?.bmi || "-"}
         />
         <StatsCard
           title="Ideal Weight"
@@ -245,7 +245,7 @@ const DashboardPage = () => {
             )
           }
           value={
-            data?.health?.latest.weight
+            data?.health?.latest?.weight
               ? `${data.health.latest.weight} kg`
               : "-"
           }
@@ -259,8 +259,8 @@ const DashboardPage = () => {
           metricLabel="Weight (kg)"
           title="Weight Trends"
           description="Showing your weight progression over time"
-          trendDirection={data?.health?.trendDirections.weight.direction}
-          trendChange={data?.health?.trendDirections.weight.change}
+          trendDirection={data?.health?.trendDirections?.weight?.direction}
+          trendChange={data?.health?.trendDirections?.weight?.change}
           trendLabel="selected period"
           color="var(--chart-1)"
         />
@@ -271,8 +271,8 @@ const DashboardPage = () => {
           metricLabel="Body Fat (%)"
           title="Body Fat Trends"
           description="Showing your Body Fat progression over time"
-          trendDirection={data?.health?.trendDirections.bodyFat.direction}
-          trendChange={data?.health?.trendDirections.bodyFat.change}
+          trendDirection={data?.health?.trendDirections?.bodyFat?.direction}
+          trendChange={data?.health?.trendDirections?.bodyFat?.change}
           trendLabel="selected period"
           color="var(--chart-2)"
         />
