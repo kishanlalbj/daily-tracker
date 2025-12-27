@@ -9,11 +9,10 @@ import {
   DialogTrigger
 } from "@/components/ui/dialog";
 import { ColumnDef } from "@tanstack/react-table";
-// import { SidebarTrigger } from "@/components/ui/sidebar";
 import { PlusIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import ExpenseForm from "@/components/expense-form";
-import { BASE_API_URL, paths } from "@/constants";
+import { paths } from "@/constants";
 import { format } from "date-fns";
 import { Toaster, toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -33,7 +32,7 @@ const ExpenseTrackerPage = () => {
 
   const handleExpenseSubmit = async (data: unknown) => {
     try {
-      const res = await fetch(`${BASE_API_URL}${paths.EXPENSE_API}`, {
+      const res = await fetch(`${paths.EXPENSE_API}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -57,7 +56,7 @@ const ExpenseTrackerPage = () => {
   useEffect(() => {
     const fetchExpenses = async () => {
       try {
-        const res = await fetch(`${BASE_API_URL}${paths.EXPENSE_API}`);
+        const res = await fetch(`${paths.EXPENSE_API}`);
 
         const result = await res.json();
 

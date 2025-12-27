@@ -39,7 +39,9 @@ export default async function RootLayout({
             <SidebarProvider>
               {user && <AppSidebar />}
 
-              <main className="max-w-6xl container mx-auto">{children}</main>
+              <main className="w-full max-w-6xl container mx-auto px-4 md:px-6 lg:px-8">
+                {children}
+              </main>
             </SidebarProvider>
           </ThemeProvider>
         </UserProvider>

@@ -116,7 +116,7 @@ export default function Home() {
   const handleSubmit = async (data: MeasurementData) => {
     try {
       setLoading(true);
-      const res = await fetch(`${BASE_API_URL}${paths.HEATH_API}`, {
+      const res = await fetch(`${paths.HEATH_API}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -140,7 +140,7 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`${BASE_API_URL}${paths.HEATH_API}`, {
+        const res = await fetch(`${paths.HEATH_API}`, {
           method: "GET"
         });
         const resData = await res.json();
@@ -217,7 +217,7 @@ export default function Home() {
         </div>
       </div>
 
-      <DataTable columns={columns} data={data} />
+      <DataTable columns={columns} data={data} title="Health Data" />
     </div>
   );
 }

@@ -12,6 +12,7 @@ import {
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -21,6 +22,9 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
+import { paths } from "@/constants";
+import { Toaster, toast } from "sonner";
 
 const items = [
   {
@@ -56,8 +60,33 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetch(paths.LOGOUT_API, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!res.ok) {
+        throw new Error("Logout failed");
+      }
+
+      toast.success("Logout successful", { richColors: true });
+      router.refresh();
+      router.replace("/");
+    } catch (error) {
+      console.error(error);
+      toast.error("Logout failed", { richColors: true });
+    }
+  };
+
   return (
     <Sidebar variant="sidebar" collapsible="icon">
+      <Toaster />
       <SidebarHeader className="mb-6">
         <div className="flex items-center justify-between">
           <Button variant="ghost" size="icon">
@@ -80,6 +109,17 @@ export function AppSidebar() {
           ))}
         </SidebarMenu>
       </SidebarContent>
+
+      <SidebarFooter>
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full"
+          onClick={handleLogout}
+        >
+          Logout
+        </Button>
+      </SidebarFooter>
     </Sidebar>
   );
 }

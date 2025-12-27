@@ -6,6 +6,7 @@ import prisma from "@/lib/prisma";
 export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
+    const userId = req.headers.get("x-user-id");
 
     const { weight, waist, neck, height } = data;
 
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest) {
         bodyFat,
         bodyFatWeight,
         neck,
-        userId: 1
+        userId: Number(userId)
       }
     });
 
@@ -50,9 +51,10 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   try {
+    const userId = req.headers.get("x-user-id");
     const data = await prisma.healthTracker.findMany({
       where: {
-        userId: 1
+        userId: Number(userId)
       },
       orderBy: {
         created_at: "desc"

@@ -9,8 +9,8 @@ import {
 
 interface StatsCardProps {
   title: string;
-  subtitle: string;
-  value: string | number;
+  subtitle: string | React.ReactNode;
+  value: string | number | React.ReactNode;
 }
 
 const StatsCard = ({ title, subtitle, value }: StatsCardProps) => {
