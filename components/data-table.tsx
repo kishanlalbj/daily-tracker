@@ -20,18 +20,20 @@ import {
   TableRow
 } from "@/components/ui/table";
 import { ArrowUp, ArrowDown, ArrowUpDownIcon } from "lucide-react";
-import { Card, CardContent } from "./ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 
 type DataTableProps<TData> = {
   data: TData[];
   columns: ColumnDef<TData, any>[];
   pageSize?: number;
+  title: string;
 };
 
 export function DataTable<TData>({
   data,
   columns,
+  title,
   pageSize = 5
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -57,6 +59,9 @@ export function DataTable<TData>({
   return (
     <>
       <Card>
+        <CardHeader>
+          <CardTitle>{title}</CardTitle>
+        </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>

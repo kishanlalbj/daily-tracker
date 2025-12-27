@@ -16,6 +16,7 @@ import ExpenseForm from "@/components/expense-form";
 import { BASE_API_URL, paths } from "@/constants";
 import { format } from "date-fns";
 import { Toaster, toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 
 type Expense = {
   id?: string | number;
@@ -81,6 +82,14 @@ const ExpenseTrackerPage = () => {
         }
       },
       {
+        accessorKey: "category",
+        header: "Category",
+        cell: ({ getValue }) => {
+          const cat = getValue() as { title: string };
+          return <Badge variant="default">{cat.title}</Badge>;
+        }
+      },
+      {
         accessorKey: "expense_title",
         header: "Expense Title",
         cell: ({ getValue }) => getValue()
@@ -89,14 +98,6 @@ const ExpenseTrackerPage = () => {
         accessorKey: "amount",
         header: "Amount",
         cell: ({ getValue }) => `₹${getValue()}`
-      },
-      {
-        accessorKey: "category",
-        header: "Category",
-        cell: ({ getValue }) => {
-          const cat = getValue() as { title: string };
-          return cat.title;
-        }
       }
     ],
     []
@@ -128,7 +129,7 @@ const ExpenseTrackerPage = () => {
       </div>
 
       <div>
-        <DataTable columns={columns} data={data} />
+        <DataTable columns={columns} data={data} title="Expenses" />
       </div>
     </div>
   );

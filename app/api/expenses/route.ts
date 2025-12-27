@@ -50,8 +50,6 @@ export async function GET() {
       }
     });
 
-    console.log("========= Expenses", expenses);
-
     return NextResponse.json(
       {
         data: expenses
