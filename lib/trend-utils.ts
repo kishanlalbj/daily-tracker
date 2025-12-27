@@ -7,12 +7,6 @@ export interface TrendInfo {
   displayText: string;
 }
 
-/**
- * Get trend information with symbol and formatted display text
- * @param direction - Trend direction (up/down/stable)
- * @param change - Percentage change value
- * @returns Trend information object
- */
 export function getTrendInfo(
   direction: TrendDirection,
   change: number
@@ -45,11 +39,6 @@ export function getTrendInfo(
   }
 }
 
-/**
- * Get trend symbol based on direction
- * @param direction - Trend direction (up/down/stable)
- * @returns Symbol representing the trend
- */
 export function getTrendSymbol(direction: TrendDirection): "+" | "-" | "=" {
   switch (direction) {
     case "up":
@@ -62,13 +51,6 @@ export function getTrendSymbol(direction: TrendDirection): "+" | "-" | "=" {
   }
 }
 
-/**
- * Format trend change text
- * @param direction - Trend direction
- * @param change - Percentage change
- * @param label - Optional label to append (e.g., "this month")
- * @returns Formatted text string
- */
 export function formatTrendText(
   direction: TrendDirection,
   change: number,
