@@ -17,7 +17,13 @@ export async function GET(req: NextRequest) {
 
     const dateFilter = { gte: fromDate, lt: toDate };
 
-    // Parallel data fetching
+    // Calculate previous period dates
+    const periodDays = Math.ceil(
+      (toDate.getTime() - fromDate.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    const previousFromDate = new Date(fromDate);
+    previousFromDate.setDate(fromDate.getDate() - periodDays);
+
     const [
       healthData,
       latestHealthMetrics,
@@ -87,21 +93,13 @@ export async function GET(req: NextRequest) {
       }),
 
       // Previous period for comparison
-      (async () => {
-        const periodDays = Math.ceil(
-          (toDate.getTime() - fromDate.getTime()) / (1000 * 60 * 60 * 24)
-        );
-        const previousFromDate = new Date(fromDate);
-        previousFromDate.setDate(fromDate.getDate() - periodDays);
-
-        return prisma.expenseTracker.aggregate({
-          where: {
-            userId,
-            date: { gte: previousFromDate, lt: fromDate }
-          },
-          _sum: { amount: true }
-        });
-      })()
+      prisma.expenseTracker.aggregate({
+        where: {
+          userId,
+          date: { gte: previousFromDate, lt: fromDate }
+        },
+        _sum: { amount: true }
+      })
     ]);
 
     // Fetch categories

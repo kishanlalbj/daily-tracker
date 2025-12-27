@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { getCurrentUser } from "@/lib/helpers";
 import { UserProvider } from "@/contexts/UserContext";
@@ -39,8 +39,15 @@ export default async function RootLayout({
             <SidebarProvider>
               {user && <AppSidebar />}
 
-              <main className="w-full max-w-6xl container mx-auto px-4 md:px-6 lg:px-8">
-                {children}
+              <main className="w-full">
+                {user && (
+                  <div className="flex items-center h-14 px-4 border-b md:hidden">
+                    <SidebarTrigger />
+                  </div>
+                )}
+                <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-6xl">
+                  {children}
+                </div>
               </main>
             </SidebarProvider>
           </ThemeProvider>

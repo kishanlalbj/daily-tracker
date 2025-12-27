@@ -103,24 +103,27 @@ const ExpenseTrackerPage = () => {
   );
 
   return (
-    <div>
+    <div className="container mx-auto px-4 py-6 md:py-8 lg:py-10 max-w-7xl">
       <Toaster />
-      <div className="flex items-center h-14 justify-between">
-        <div className="flex items-center gap-2">
-          <h1>Expense Tracker</h1>
-        </div>
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-2">
+          Expense Tracker
+        </h1>
+        <p className="text-muted-foreground text-sm md:text-base">
+          Track and manage your daily expenses
+        </p>
       </div>
 
-      <div className="flex items-center justify-end my-4">
+      <div className="flex justify-end mb-6 md:mb-8">
         <Dialog modal={true}>
           <DialogTrigger asChild>
             <Button variant={"default"}>
-              <PlusIcon /> Expense
+              <PlusIcon /> Add Expense
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Add Expense </DialogTitle>
+              <DialogTitle>Add Expense</DialogTitle>
             </DialogHeader>
             <ExpenseForm handleSubmit={handleExpenseSubmit} />
           </DialogContent>

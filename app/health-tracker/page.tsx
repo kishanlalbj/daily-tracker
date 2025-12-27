@@ -142,15 +142,21 @@ export default function Home() {
   }, []);
 
   return (
-    <div>
+    <div className="container mx-auto px-4 py-6 md:py-8 lg:py-10 max-w-7xl">
       <Toaster />
 
-      <div className="h-14 flex items-center justify-between">
-        <h1>Health Tracker</h1>
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-2">
+          Health Tracker
+        </h1>
+        <p className="text-muted-foreground text-sm md:text-base">
+          Monitor your body measurements and health progress
+        </p>
       </div>
-      <div className="flex items-center justify-end my-4">
+
+      <div className="flex justify-end mb-6 md:mb-8">
         <Button onClick={() => setShouldShowForm(true)}>
-          <PlusIcon /> Measurement
+          <PlusIcon /> Add Measurement
         </Button>
       </div>
 
@@ -166,9 +172,11 @@ export default function Home() {
         </DialogContent>
       </Dialog>
 
-      <div>
-        <h1 className="text-xl font-semibold"> Last 7 Days Average</h1>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
+      <div className="mb-6 md:mb-8">
+        <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">
+          Last 7 Days Average
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           <Card>
             <CardHeader>
               <CardTitle>Body Mass Index</CardTitle>
@@ -194,9 +202,7 @@ export default function Home() {
           <Card>
             <CardHeader>
               <CardTitle>Weekly Average Weight</CardTitle>
-              <CardDescription>
-                <p> {"       "} </p>
-              </CardDescription>
+              <CardDescription></CardDescription>
             </CardHeader>
 
             <CardContent>
@@ -206,7 +212,9 @@ export default function Home() {
         </div>
       </div>
 
-      <DataTable columns={columns} data={data} title="Health Data" />
+      <div>
+        <DataTable columns={columns} data={data} title="Health Data" />
+      </div>
     </div>
   );
 }

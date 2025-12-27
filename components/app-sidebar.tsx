@@ -4,6 +4,7 @@ import {
   GaugeIcon,
   HeartPulseIcon,
   IndianRupeeIcon,
+  LogOutIcon,
   PlaySquareIcon,
   TrendingUpIcon,
   UserIcon
@@ -61,6 +62,7 @@ const items = [
 
 export function AppSidebar() {
   const router = useRouter();
+  const { isMobile, open, toggleSidebar } = useSidebar();
 
   const handleLogout = async () => {
     try {
@@ -87,21 +89,40 @@ export function AppSidebar() {
   return (
     <Sidebar variant="sidebar" collapsible="icon">
       <Toaster />
-      <SidebarHeader className="mb-6">
-        <div className="flex items-center justify-between">
-          <Button variant="ghost" size="icon">
-            <TrendingUpIcon />
-          </Button>
-          <SidebarTrigger />
+      <SidebarHeader className="border-b">
+        <div className="flex items-center gap-2 p-2">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <div
+              className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={!open ? toggleSidebar : () => {}}
+            >
+              <TrendingUpIcon className="h-5 w-5" />
+            </div>
+            {open && (
+              <div className="flex flex-col min-w-0 flex-1">
+                <h2 className="text-base font-semibold leading-tight truncate">
+                  Daily Tracker
+                </h2>
+                <p className="text-xs text-muted-foreground truncate">
+                  Track your progress
+                </p>
+              </div>
+            )}
+          </div>
+          {!isMobile && open && (
+            <div className="flex-shrink-0">
+              <SidebarTrigger />
+            </div>
+          )}
         </div>
       </SidebarHeader>
-      <SidebarContent>
-        <SidebarMenu>
+      <SidebarContent className="px-2 py-4">
+        <SidebarMenu className="gap-1">
           {items.map((item) => (
-            <SidebarMenuItem key={item.title} className="mb-2">
+            <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild>
                 <Link href={item.url}>
-                  <item.icon />
+                  <item.icon scale={1.5} />
                   <span>{item.title}</span>
                 </Link>
               </SidebarMenuButton>
@@ -110,14 +131,14 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarContent>
 
-      <SidebarFooter>
+      <SidebarFooter className="p-2">
         <Button
           variant="outline"
           size="sm"
           className="w-full"
           onClick={handleLogout}
         >
-          Logout
+          <LogOutIcon /> {open && "Logout"}
         </Button>
       </SidebarFooter>
     </Sidebar>

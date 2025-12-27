@@ -107,22 +107,24 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="container mx-auto py-10 px-4 sm:px-6 max-w-5xl">
+    <div className="container mx-auto px-4 py-6 md:py-8 lg:py-10 max-w-7xl">
       <Toaster />
-      <div className="mb-10">
+      <div className="mb-6 md:mb-8">
         <div className="flex items-center justify-between mb-2">
-          <h1 className="text-3xl font-semibold">Profile</h1>
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">
+            Profile
+          </h1>
           <Button onClick={handleEditClick} className="gap-2">
             <Pencil className="w-4 h-4" />
-            Edit
+            Edit Profile
           </Button>
         </div>
-        <p className="text-base text-muted-foreground">
+        <p className="text-muted-foreground text-sm md:text-base">
           Manage your account settings and preferences
         </p>
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-6 md:space-y-8">
         <Card>
           <CardHeader className="space-y-1 pb-6">
             <CardTitle className="text-xl font-semibold">

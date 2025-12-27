@@ -137,15 +137,21 @@ const DashboardPage = () => {
   const bmiCategory = getBMICategory(data?.health?.latest?.bmi);
 
   return (
-    <div className="mt-4 md:mt-8 lg:mt-12 px-2 sm:px-4 md:px-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
-        <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold">
-          <span>Hello, </span> {user?.first_name} {user?.last_name}
+    <div className="container mx-auto px-4 py-6 md:py-8 lg:py-10 max-w-7xl">
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-2">
+          Dashboard
         </h1>
+        <p className="text-muted-foreground text-sm md:text-base">
+          Hello, {user?.first_name} {user?.last_name}
+        </p>
+      </div>
+
+      <div className="flex justify-end mb-6 md:mb-8">
         <DateRangePicker value={dateRange} onChange={setDateRange} />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 my-3 sm:my-4 md:my-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
         <StatsCard
           title="Total Expenses"
           subtitle={
@@ -175,7 +181,7 @@ const DashboardPage = () => {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
         <ChartBarDefault
           chartData={data?.expenses?.trends || []}
           dataKey="total"
@@ -194,7 +200,7 @@ const DashboardPage = () => {
         ></ChartPieDonut>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
         <StatsCard
           title="Body Composition"
           subtitle={
@@ -252,7 +258,7 @@ const DashboardPage = () => {
         />
       </div>
 
-      <div className="mt-4 sm:mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         <ChartLineLinear
           chartData={data?.health?.trends || []}
           dataKey="weight"
