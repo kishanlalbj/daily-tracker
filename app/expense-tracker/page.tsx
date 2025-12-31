@@ -9,7 +9,7 @@ import {
   DialogTrigger
 } from "@/components/ui/dialog";
 import { ColumnDef } from "@tanstack/react-table";
-import { PlusIcon, UploadIcon } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import ExpenseForm from "@/components/forms/expense-form";
 import { paths } from "@/constants";
@@ -83,17 +83,17 @@ const ExpenseTrackerPage = () => {
         }
       },
       {
+        accessorKey: "expense_title",
+        header: "Expense Title",
+        cell: ({ getValue }) => getValue()
+      },
+      {
         accessorKey: "category",
         header: "Category",
         cell: ({ getValue }) => {
           const cat = getValue() as { title: string };
           return <Badge variant="default">{cat.title}</Badge>;
         }
-      },
-      {
-        accessorKey: "expense_title",
-        header: "Expense Title",
-        cell: ({ getValue }) => getValue()
       },
       {
         accessorKey: "amount",

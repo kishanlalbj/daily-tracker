@@ -15,6 +15,8 @@ import {
   getBMICategory
 } from "@/lib/dashboard-helpers";
 import PageTitle from "@/components/page-title";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TrendingDownIcon, TrendingUpIcon } from "lucide-react";
 
 type DashboardData = {
   health: {
@@ -149,142 +151,165 @@ const DashboardPage = () => {
         }
       ></PageTitle>
 
-      <p className="text-lg font-semibold mb-4">Expenses</p>
+      <Tabs defaultValue="expenses">
+        <TabsList>
+          <TabsTrigger value="expenses">Expense</TabsTrigger>
+          <TabsTrigger value="health">Health</TabsTrigger>
+        </TabsList>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
-        <StatsCard
-          title="Total Expenses"
-          subtitle={
-            expensesTrend
-              ? `${expensesTrend.symbol} ${expensesTrend.displayText}`
-              : "-"
-          }
-          value={formatCurrency(data?.expenses?.summary.total)}
-        />
+        <TabsContent value="expenses" className="my-2">
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
+              <StatsCard
+                title="Total Expenses"
+                subtitle={
+                  expensesTrend
+                    ? `${expensesTrend.symbol} ${expensesTrend.displayText}`
+                    : "-"
+                }
+                value={formatCurrency(data?.expenses?.summary.total)}
+              />
 
-        <StatsCard
-          title="Daily Average"
-          subtitle={`${
-            data?.expenses?.summary.transactionCount || 0
-          } transactions`}
-          value={formatCurrency(data?.expenses?.summary.average)}
-        />
+              <StatsCard
+                title="Daily Average"
+                subtitle={`${
+                  data?.expenses?.summary.transactionCount || 0
+                } transactions`}
+                value={formatCurrency(data?.expenses?.summary.average)}
+              />
 
-        <StatsCard
-          title="Top Spending Category"
-          subtitle={formatCurrency(data?.expenses?.topSpendingCategory?.total)}
-          value={
-            data?.expenses?.topSpendingCategory?.category
-              ? data.expenses.topSpendingCategory.category
-              : "-"
-          }
-        />
-      </div>
+              <StatsCard
+                title="Top Spending Category"
+                subtitle={formatCurrency(
+                  data?.expenses?.topSpendingCategory?.total
+                )}
+                value={
+                  data?.expenses?.topSpendingCategory?.category
+                    ? data.expenses.topSpendingCategory.category
+                    : "-"
+                }
+              />
+            </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
-        <ChartBarDefault
-          chartData={data?.expenses?.trends || []}
-          dataKey="total"
-          metricLabel="Total Expenses "
-          title="Expenses Over Time"
-          className="w-full h-80 md:h-96"
-        ></ChartBarDefault>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
+              <ChartBarDefault
+                chartData={data?.expenses?.trends || []}
+                dataKey="total"
+                metricLabel="Total Expenses "
+                title="Expenses Over Time"
+                className="w-full h-80 md:h-96"
+              ></ChartBarDefault>
 
-        <ChartPieDonut
-          chartData={data?.expenses?.categoryBreakdown || []}
-          dataKey="total"
-          nameKey="category"
-          metricLabel="Expenses by Category"
-          title="Expenses by Category"
-          className="w-full h-80 md:h-96"
-        ></ChartPieDonut>
-      </div>
-      <hr className="my-2" />
-      <p className="text-lg font-semibold mb-4">Health</p>
+              <ChartPieDonut
+                chartData={data?.expenses?.categoryBreakdown || []}
+                dataKey="total"
+                nameKey="category"
+                metricLabel="Expenses by Category"
+                title="Expenses by Category"
+                className="w-full h-80 md:h-96"
+              ></ChartPieDonut>
+            </div>
+          </>
+        </TabsContent>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
-        <StatsCard
-          title="Body Composition"
-          subtitle={
-            data?.health?.bodyComposition ? (
-              <span className={data.health.bodyComposition.color}>
-                {data.health.bodyComposition.message}
-              </span>
-            ) : (
-              ""
-            )
-          }
-          value={
-            data?.health?.latest?.bodyFat
-              ? `${data.health.latest.bodyFat}%`
-              : "-"
-          }
-        />
-        <StatsCard
-          title="Body Mass Index (BMI)"
-          subtitle={
-            <span className={bmiCategory.color}>
-              {bmiCategory.category}
-              {bmiTrend && (
-                <span className="ml-2 text-muted-foreground">
-                  {bmiTrend.symbol} {bmiTrend.displayText}
-                </span>
-              )}
-            </span>
-          }
-          value={data?.health?.latest?.bmi || "-"}
-        />
-        <StatsCard
-          title="Ideal Weight"
-          subtitle="Based on healthy BMI"
-          value={
-            data?.health?.idealWeight ? `${data.health.idealWeight} kg` : "-"
-          }
-        />
-        <StatsCard
-          title="Current Weight"
-          subtitle={
-            data?.health?.weightGoal ? (
-              <span className={data.health.weightGoal.color}>
-                {data.health.weightGoal.message}
-              </span>
-            ) : (
-              ""
-            )
-          }
-          value={
-            data?.health?.latest?.weight
-              ? `${data.health.latest.weight} kg`
-              : "-"
-          }
-        />
-      </div>
+        <TabsContent value="health" className="my-2">
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+              <StatsCard
+                title="Body Composition"
+                subtitle={
+                  data?.health?.bodyComposition ? (
+                    <span className={data.health.bodyComposition.color}>
+                      {data.health.bodyComposition.message}
+                    </span>
+                  ) : (
+                    ""
+                  )
+                }
+                value={
+                  data?.health?.latest?.bodyFat
+                    ? `${data.health.latest.bodyFat}%`
+                    : "-"
+                }
+              />
+              <StatsCard
+                title="Body Mass Index (BMI)"
+                subtitle={
+                  <span className={bmiCategory.color}>
+                    {bmiCategory.category}
+                    {bmiTrend && (
+                      <span className="ml-2 text-muted-foreground inline-flex items-center">
+                        {bmiTrend.symbol === "+" ? (
+                          <TrendingUpIcon color="red" size={16} />
+                        ) : (
+                          <TrendingDownIcon color="green" size={16} />
+                        )}
+                      </span>
+                    )}
+                  </span>
+                }
+                value={data?.health?.latest?.bmi || "-"}
+              />
+              <StatsCard
+                title="Ideal Weight"
+                subtitle="Based on healthy BMI"
+                value={
+                  data?.health?.idealWeight
+                    ? `${data.health.idealWeight} kg`
+                    : "-"
+                }
+              />
+              <StatsCard
+                title="Current Weight"
+                subtitle={
+                  data?.health?.weightGoal ? (
+                    <span className={data.health.weightGoal.color}>
+                      {data.health.weightGoal.message}
+                    </span>
+                  ) : (
+                    ""
+                  )
+                }
+                value={
+                  data?.health?.latest?.weight
+                    ? `${data.health.latest.weight} kg`
+                    : "-"
+                }
+              />
+            </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-        <ChartLineLinear
-          chartData={data?.health?.trends || []}
-          dataKey="weight"
-          metricLabel="Weight (kg)"
-          title="Weight Trends"
-          description="Showing your weight progression over time"
-          trendDirection={data?.health?.trendDirections?.weight?.direction}
-          trendChange={data?.health?.trendDirections?.weight?.change}
-          trendLabel="selected period"
-          color="var(--chart-1)"
-        />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+              <ChartLineLinear
+                chartData={data?.health?.trends || []}
+                dataKey="weight"
+                metricLabel="Weight (kg)"
+                title="Weight Trends"
+                description="Showing your weight progression over time"
+                trendDirection={
+                  data?.health?.trendDirections?.weight?.direction
+                }
+                trendChange={data?.health?.trendDirections?.weight?.change}
+                trendLabel="selected period"
+                color="var(--chart-1)"
+              />
 
-        <ChartLineLinear
-          chartData={data?.health?.trends || []}
-          dataKey="bodyFat"
-          metricLabel="Body Fat (%)"
-          title="Body Fat Trends"
-          description="Showing your Body Fat progression over time"
-          trendDirection={data?.health?.trendDirections?.bodyFat?.direction}
-          trendChange={data?.health?.trendDirections?.bodyFat?.change}
-          trendLabel="selected period"
-          color="var(--chart-2)"
-        />
-      </div>
+              <ChartLineLinear
+                chartData={data?.health?.trends || []}
+                dataKey="bodyFat"
+                metricLabel="Body Fat (%)"
+                title="Body Fat Trends"
+                description="Showing your Body Fat progression over time"
+                trendDirection={
+                  data?.health?.trendDirections?.bodyFat?.direction
+                }
+                trendChange={data?.health?.trendDirections?.bodyFat?.change}
+                trendLabel="selected period"
+                color="var(--chart-2)"
+              />
+            </div>
+          </>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
