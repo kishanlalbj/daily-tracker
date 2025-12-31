@@ -9,13 +9,15 @@ import {
   DialogTrigger
 } from "@/components/ui/dialog";
 import { ColumnDef } from "@tanstack/react-table";
-// import { SidebarTrigger } from "@/components/ui/sidebar";
 import { PlusIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import ExpenseForm from "@/components/expense-form";
-import { BASE_API_URL, paths } from "@/constants";
+import ExpenseForm from "@/components/forms/expense-form";
+import { paths } from "@/constants";
 import { format } from "date-fns";
 import { Toaster, toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import PageTitle from "@/components/page-title";
+import { Input } from "@/components/ui/input";
 
 type Expense = {
   id?: string | number;
@@ -32,7 +34,7 @@ const ExpenseTrackerPage = () => {
 
   const handleExpenseSubmit = async (data: unknown) => {
     try {
-      const res = await fetch(`${BASE_API_URL}${paths.EXPENSE_API}`, {
+      const res = await fetch(`${paths.EXPENSE_API}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -56,7 +58,7 @@ const ExpenseTrackerPage = () => {
   useEffect(() => {
     const fetchExpenses = async () => {
       try {
-        const res = await fetch(`${BASE_API_URL}${paths.EXPENSE_API}`);
+        const res = await fetch(`${paths.EXPENSE_API}`);
 
         const result = await res.json();
 
@@ -86,49 +88,57 @@ const ExpenseTrackerPage = () => {
         cell: ({ getValue }) => getValue()
       },
       {
-        accessorKey: "amount",
-        header: "Amount",
-        cell: ({ getValue }) => `₹${getValue()}`
-      },
-      {
         accessorKey: "category",
         header: "Category",
         cell: ({ getValue }) => {
           const cat = getValue() as { title: string };
-          return cat.title;
+          return <Badge variant="default">{cat.title}</Badge>;
         }
+      },
+      {
+        accessorKey: "amount",
+        header: "Amount",
+        cell: ({ getValue }) => `₹${getValue()}`
       }
     ],
     []
   );
 
   return (
-    <div>
+    <div className="container mx-auto px-4 py-6 md:py-8 lg:py-10 max-w-7xl">
       <Toaster />
-      <div className="flex items-center h-14 justify-between">
-        <div className="flex items-center gap-2">
-          <h1>Expense Tracker</h1>
-        </div>
-      </div>
 
-      <div className="flex items-center justify-end my-4">
-        <Dialog modal={true}>
-          <DialogTrigger asChild>
-            <Button variant={"default"}>
-              <PlusIcon /> Expense
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add Expense </DialogTitle>
-            </DialogHeader>
-            <ExpenseForm handleSubmit={handleExpenseSubmit} />
-          </DialogContent>
-        </Dialog>
-      </div>
+      <PageTitle
+        title="Expense Tracker"
+        subtitle="Track and manage your daily expenses"
+        actionSlot={
+          <div className="flex items-center gap-4">
+            {/* <div className="flex-inline">
+              <Button type="button" variant={"outline"}>
+                <UploadIcon />
+              </Button>
+            </div> */}
+            <Dialog modal={true}>
+              <DialogTrigger asChild>
+                <Button variant={"default"}>
+                  <PlusIcon /> Expense
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add Expense</DialogTitle>
+                </DialogHeader>
+                <ExpenseForm handleSubmit={handleExpenseSubmit} />
+              </DialogContent>
+            </Dialog>
+            {/* <Input type="file"> */}
+            {/* </Input> */}
+          </div>
+        }
+      ></PageTitle>
 
       <div>
-        <DataTable columns={columns} data={data} />
+        <DataTable columns={columns} data={data} title="Expenses" />
       </div>
     </div>
   );

@@ -4,13 +4,14 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   try {
     const { date, expense_title, amount, category } = await req.json();
+    const userId = req.headers.get("x-user-id");
 
     const expense = await prisma.expenseTracker.create({
       data: {
         date,
         expense_title,
         categoryId: category,
-        userId: 1,
+        userId: Number(userId),
         amount
       },
       include: {
@@ -32,11 +33,12 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const userId = req.headers.get("x-user-id");
     const expenses = await prisma.expenseTracker.findMany({
       where: {
-        userId: 1
+        userId: Number(userId)
       },
       include: {
         category: {
@@ -49,8 +51,6 @@ export async function GET() {
         date: "desc"
       }
     });
-
-    console.log("========= Expenses", expenses);
 
     return NextResponse.json(
       {

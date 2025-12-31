@@ -23,10 +23,10 @@ import {
   PopoverTrigger
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { BASE_API_URL, paths } from "@/constants";
 import { Spinner } from "@/components/ui/spinner";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { paths } from "@/constants";
 
 const ExpenseSchema = z.object({
   expense_title: z.string().min(1, "Expense title is required"),
@@ -66,7 +66,6 @@ const ExpenseForm = ({ handleSubmit }: ExpenseFormProps) => {
   const { control } = form;
 
   const onSubmit = (data: ExpenseFormData) => {
-    console.log(data);
     handleSubmit(data);
   };
 
@@ -74,7 +73,7 @@ const ExpenseForm = ({ handleSubmit }: ExpenseFormProps) => {
     const getCategoryOptions = async () => {
       try {
         setIsCategoriesLoading(true);
-        const res = await fetch(`${BASE_API_URL}${paths.CATEGORY_API}`);
+        const res = await fetch(`${paths.CATEGORY_API}`);
 
         const resData = await res.json();
 
@@ -84,8 +83,6 @@ const ExpenseForm = ({ handleSubmit }: ExpenseFormProps) => {
         }));
 
         setCategoryOptions(formattedOptions);
-
-        console.log("resssssssss", formattedOptions);
       } catch (error) {
         console.log(error);
       } finally {
