@@ -34,7 +34,7 @@ export function DataTable<TData>({
   data,
   columns,
   title,
-  pageSize = 5
+  pageSize = 10
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({

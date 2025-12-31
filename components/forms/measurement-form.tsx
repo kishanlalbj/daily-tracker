@@ -34,7 +34,6 @@ const MeasurementForm = ({ onFormSubmit, loading }: MeasurementFormProps) => {
   const { control, handleSubmit } = form;
 
   const onSubmit = (data: MeasurementData) => {
-    console.log(data);
     onFormSubmit(data);
   };
 

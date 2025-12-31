@@ -4,16 +4,17 @@ import { useUser } from "@/contexts/UserContext";
 import { useEffect, useState } from "react";
 import { DateRangePicker } from "@/components/date-range-picker";
 import { DateRange as TDateRange } from "react-day-picker";
-import { ChartLineLinear } from "@/components/chart-line-linear";
+import { ChartLineLinear } from "@/components/charts/chart-line-linear";
 import StatsCard from "@/components/stats-card";
 import { type TrendDirection } from "@/lib/trend-utils";
-import { ChartBarDefault } from "@/components/bar-chart";
-import { ChartPieDonut } from "@/components/pie-chart";
+import { ChartBarDefault } from "@/components/charts/bar-chart";
+import { ChartPieDonut } from "@/components/charts/pie-chart";
 import {
   calculateTrendFromData,
   formatCurrency,
   getBMICategory
 } from "@/lib/dashboard-helpers";
+import PageTitle from "@/components/page-title";
 
 type DashboardData = {
   health: {
@@ -138,18 +139,17 @@ const DashboardPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-6 md:py-8 lg:py-10 max-w-7xl">
-      <div className="mb-6 md:mb-8">
-        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-2">
-          Dashboard
-        </h1>
-        <p className="text-muted-foreground text-sm md:text-base">
-          Hello, {user?.first_name} {user?.last_name}
-        </p>
-      </div>
+      <PageTitle
+        title="Dashboard"
+        subtitle={`Hello, ${user?.first_name} ${user?.last_name}`}
+        actionSlot={
+          <>
+            <DateRangePicker value={dateRange} onChange={setDateRange} />
+          </>
+        }
+      ></PageTitle>
 
-      <div className="flex justify-end mb-6 md:mb-8">
-        <DateRangePicker value={dateRange} onChange={setDateRange} />
-      </div>
+      <p className="text-lg font-semibold mb-4">Expenses</p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
         <StatsCard
@@ -199,6 +199,8 @@ const DashboardPage = () => {
           className="w-full h-80 md:h-96"
         ></ChartPieDonut>
       </div>
+      <hr className="my-2" />
+      <p className="text-lg font-semibold mb-4">Health</p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
         <StatsCard

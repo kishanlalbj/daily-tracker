@@ -1,11 +1,9 @@
 "use client";
 import {
-  Calendar,
   GaugeIcon,
   HeartPulseIcon,
   IndianRupeeIcon,
   LogOutIcon,
-  PlaySquareIcon,
   TrendingUpIcon,
   UserIcon
 } from "lucide-react";
@@ -42,16 +40,6 @@ const items = [
     title: "Expenses Tracker",
     url: "/expense-tracker",
     icon: IndianRupeeIcon
-  },
-  {
-    title: "Calendar",
-    url: "/calendar",
-    icon: Calendar
-  },
-  {
-    title: "Reels",
-    url: "/reels",
-    icon: PlaySquareIcon
   },
   {
     title: "Profile",
@@ -93,7 +81,7 @@ export function AppSidebar() {
         <div className="flex items-center gap-2 p-2">
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <div
-              className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+              className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
               onClick={!open ? toggleSidebar : () => {}}
             >
               <TrendingUpIcon className="h-5 w-5" />
@@ -110,7 +98,7 @@ export function AppSidebar() {
             )}
           </div>
           {!isMobile && open && (
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <SidebarTrigger />
             </div>
           )}
@@ -122,7 +110,7 @@ export function AppSidebar() {
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild>
                 <Link href={item.url}>
-                  <item.icon scale={1.5} />
+                  <item.icon scale={1.5} className="scale-110" />
                   <span>{item.title}</span>
                 </Link>
               </SidebarMenuButton>

@@ -9,13 +9,15 @@ import {
   DialogTrigger
 } from "@/components/ui/dialog";
 import { ColumnDef } from "@tanstack/react-table";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon, UploadIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import ExpenseForm from "@/components/expense-form";
+import ExpenseForm from "@/components/forms/expense-form";
 import { paths } from "@/constants";
 import { format } from "date-fns";
 import { Toaster, toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import PageTitle from "@/components/page-title";
+import { Input } from "@/components/ui/input";
 
 type Expense = {
   id?: string | number;
@@ -105,30 +107,35 @@ const ExpenseTrackerPage = () => {
   return (
     <div className="container mx-auto px-4 py-6 md:py-8 lg:py-10 max-w-7xl">
       <Toaster />
-      <div className="mb-6 md:mb-8">
-        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-2">
-          Expense Tracker
-        </h1>
-        <p className="text-muted-foreground text-sm md:text-base">
-          Track and manage your daily expenses
-        </p>
-      </div>
 
-      <div className="flex justify-end mb-6 md:mb-8">
-        <Dialog modal={true}>
-          <DialogTrigger asChild>
-            <Button variant={"default"}>
-              <PlusIcon /> Add Expense
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add Expense</DialogTitle>
-            </DialogHeader>
-            <ExpenseForm handleSubmit={handleExpenseSubmit} />
-          </DialogContent>
-        </Dialog>
-      </div>
+      <PageTitle
+        title="Expense Tracker"
+        subtitle="Track and manage your daily expenses"
+        actionSlot={
+          <div className="flex items-center gap-4">
+            {/* <div className="flex-inline">
+              <Button type="button" variant={"outline"}>
+                <UploadIcon />
+              </Button>
+            </div> */}
+            <Dialog modal={true}>
+              <DialogTrigger asChild>
+                <Button variant={"default"}>
+                  <PlusIcon /> Expense
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add Expense</DialogTitle>
+                </DialogHeader>
+                <ExpenseForm handleSubmit={handleExpenseSubmit} />
+              </DialogContent>
+            </Dialog>
+            {/* <Input type="file"> */}
+            {/* </Input> */}
+          </div>
+        }
+      ></PageTitle>
 
       <div>
         <DataTable columns={columns} data={data} title="Expenses" />

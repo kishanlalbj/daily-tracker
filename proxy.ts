@@ -8,32 +8,38 @@ export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const token = req.cookies.get("token")?.value;
 
-  if (token && AUTH_PATHS.includes(pathname)) {
+  let decoded: ReturnType<typeof verifyJwtToken> | null = null;
+
+  if (token) {
+    try {
+      decoded = verifyJwtToken(token);
+    } catch {
+      decoded = null;
+    }
+  }
+
+  // Logged-in user hitting auth pages → redirect
+  if (decoded && AUTH_PATHS.includes(pathname)) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
+  // Public paths are always allowed
   if (PUBLIC_PATHS.includes(pathname)) {
     return NextResponse.next();
   }
 
-  if (!token) {
+  // Protected paths without valid token
+  if (!decoded) {
     return NextResponse.redirect(new URL("/", req.url));
   }
 
-  try {
-    const decoded = verifyJwtToken(token);
-    const requestHeaders = new Headers(req.headers);
-    requestHeaders.set("x-user-id", decoded.userId.toString());
+  // Attach derived identity
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-user-id", String(decoded.userId));
 
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders
-      }
-    });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.redirect(new URL("/", req.url));
-  }
+  return NextResponse.next({
+    request: { headers: requestHeaders }
+  });
 }
 
 export const config = {

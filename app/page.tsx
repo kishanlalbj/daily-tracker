@@ -1,8 +1,8 @@
 "use client";
-import LoginForm from "@/components/login-form";
-import type { LoginData } from "@/components/login-form";
-import type { RegistrationData } from "@/components/registration-form";
-import RegistrationForm from "@/components/registration-form";
+import LoginForm from "@/components/forms/login-form";
+import type { LoginData } from "@/components/forms/login-form";
+import type { RegistrationData } from "@/components/forms/registration-form";
+import RegistrationForm from "@/components/forms/registration-form";
 import { paths } from "@/constants";
 import { useState } from "react";
 import { Toaster, toast } from "sonner";
@@ -52,7 +52,6 @@ const Page = () => {
 
   const handleRegistrationSubmit = async (data: RegistrationData) => {
     try {
-      console.log(data);
       setLoading(true);
       const res = await fetch(`${paths.REGISTER_API}`, {
         method: "POST",
@@ -74,7 +73,6 @@ const Page = () => {
 
       handleToggleForm();
       toast.success("Registration successful", { richColors: true });
-      console.log(data);
     } catch (err) {
       console.error("Registration failed:", err);
       toast.error("An error occurred during registration", {

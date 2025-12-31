@@ -10,18 +10,18 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card";
-import { FormField, Form, FormMessage } from "./ui/form";
-import { Label } from "./ui/label";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
+import { FormField, Form, FormMessage } from "../ui/form";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectTrigger,
   SelectContent,
   SelectItem,
   SelectValue
-} from "./ui/select";
-import { Spinner } from "./ui/spinner";
+} from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
 
 const RegistrationSchema = z
   .object({

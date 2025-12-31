@@ -11,9 +11,9 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card";
-import { FormField, Form, FormMessage } from "./ui/form";
-import { Label } from "./ui/label";
-import { Spinner } from "./ui/spinner";
+import { FormField, Form, FormMessage } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
 
 const LoginSchema = z.object({
   email: z.email().min(1, "Email is required"),

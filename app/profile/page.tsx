@@ -33,6 +33,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { toast, Toaster } from "sonner";
 import { paths } from "@/constants";
 import { Pencil } from "lucide-react";
+import PageTitle from "@/components/page-title";
 
 const ProfileSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -109,7 +110,7 @@ const ProfilePage = () => {
   return (
     <div className="container mx-auto px-4 py-6 md:py-8 lg:py-10 max-w-7xl">
       <Toaster />
-      <div className="mb-6 md:mb-8">
+      {/* <div className="mb-6 md:mb-8">
         <div className="flex items-center justify-between mb-2">
           <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">
             Profile
@@ -122,7 +123,18 @@ const ProfilePage = () => {
         <p className="text-muted-foreground text-sm md:text-base">
           Manage your account settings and preferences
         </p>
-      </div>
+      </div> */}
+
+      <PageTitle
+        title="Profile"
+        subtitle="Manage your account settings and preferences"
+        actionSlot={
+          <Button onClick={handleEditClick} className="gap-2">
+            <Pencil className="w-4 h-4" />
+            Edit Profile
+          </Button>
+        }
+      />
 
       <div className="space-y-6 md:space-y-8">
         <Card>
@@ -261,7 +273,7 @@ const ProfilePage = () => {
                           onValueChange={field.onChange}
                           value={field.value}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select gender" />
                           </SelectTrigger>
                           <SelectContent>
