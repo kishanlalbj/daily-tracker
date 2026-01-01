@@ -110,21 +110,6 @@ const ProfilePage = () => {
   return (
     <div className="container mx-auto px-4 py-6 md:py-8 lg:py-10 max-w-7xl">
       <Toaster />
-      {/* <div className="mb-6 md:mb-8">
-        <div className="flex items-center justify-between mb-2">
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">
-            Profile
-          </h1>
-          <Button onClick={handleEditClick} className="gap-2">
-            <Pencil className="w-4 h-4" />
-            Edit Profile
-          </Button>
-        </div>
-        <p className="text-muted-foreground text-sm md:text-base">
-          Manage your account settings and preferences
-        </p>
-      </div> */}
-
       <PageTitle
         title="Profile"
         subtitle="Manage your account settings and preferences"

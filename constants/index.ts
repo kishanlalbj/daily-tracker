@@ -1,4 +1,4 @@
-export const BASE_API_URL = "http://localhost:3000/api";
+export const BASE_API_URL = process.env.NEXT_PUBLIC_URL;
 
 export const paths = {
   HEATH_API: `${BASE_API_URL}/health`,

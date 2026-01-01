@@ -18,6 +18,8 @@ import { Toaster, toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import PageTitle from "@/components/page-title";
 import { Input } from "@/components/ui/input";
+import { formatCurrency } from "@/lib/dashboard-helpers";
+import { info } from "console";
 
 type Expense = {
   id?: string | number;
@@ -98,7 +100,7 @@ const ExpenseTrackerPage = () => {
       {
         accessorKey: "amount",
         header: "Amount",
-        cell: ({ getValue }) => `₹${getValue()}`
+        cell: ({ getValue }) => `- ${formatCurrency(getValue() as number)}`
       }
     ],
     []

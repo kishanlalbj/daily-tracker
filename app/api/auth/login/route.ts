@@ -1,8 +1,4 @@
-import {
-  generateJwtToken,
-  verifyJwtToken,
-  verifyPassword
-} from "@/lib/helpers";
+import { generateJwtToken, verifyJwtToken, verifyPassword } from "@/lib/jwt";
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 

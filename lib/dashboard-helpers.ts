@@ -8,12 +8,16 @@ export const calculateTrendFromData = (
   return getTrendInfo(direction, change);
 };
 
+const currencyFormatter = new Intl.NumberFormat("en-IN", {
+  style: "currency",
+  currency: "INR",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
+});
+
 export const formatCurrency = (amount?: number | null): string => {
-  if (amount == null) return "-";
-  return `₹ ${amount.toLocaleString("en-IN", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  })}`;
+  if (amount == null || Number.isNaN(amount)) return "–";
+  return currencyFormatter.format(amount);
 };
 
 export const formatNumber = (
