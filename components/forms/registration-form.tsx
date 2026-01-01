@@ -74,7 +74,7 @@ const RegistrationForm = ({
   };
 
   return (
-    <Card className="w-md">
+    <Card className="w-full md:w-md">
       <CardHeader>
         <CardTitle>Registration</CardTitle>
       </CardHeader>
@@ -215,8 +215,8 @@ const RegistrationForm = ({
             ></FormField>
           </CardContent>
 
-          <CardFooter className="mt-4">
-            <Button type="submit" disabled={loading}>
+          <CardFooter className="mt-4 flex-col items-center gap-2">
+            <Button type="submit" disabled={loading} className="w-full">
               {loading && <Spinner></Spinner>}
               Register
             </Button>

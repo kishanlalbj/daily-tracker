@@ -44,7 +44,7 @@ const LoginForm = ({ onSubmit, onToggle, loading }: LoadingFormProps) => {
   };
 
   return (
-    <Card className="w-md">
+    <Card className="w-full md:w-md">
       <CardHeader>
         <CardTitle>Login</CardTitle>
       </CardHeader>
@@ -84,12 +84,12 @@ const LoginForm = ({ onSubmit, onToggle, loading }: LoadingFormProps) => {
             ></FormField>
           </CardContent>
 
-          <CardFooter className="mt-4">
-            <Button type="submit" disabled={loading}>
+          <CardFooter className="mt-4 flex-col items-center gap-2">
+            <Button type="submit" disabled={loading} className="w-full md:w-sm">
               Login
               {loading && <Spinner />}
             </Button>
-            <p className="ml-2">
+            <p className="ml-1">
               Don&apos;t have an account ?{" "}
               <Button type="button" variant={"link"} onClick={onToggle}>
                 Sign Up

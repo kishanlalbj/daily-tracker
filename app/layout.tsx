@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import "@/app/globals.css";
 import { ThemeProvider } from "next-themes";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -45,9 +45,7 @@ export default async function RootLayout({
                     <SidebarTrigger />
                   </div>
                 )}
-                <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-6xl">
-                  {children}
-                </div>
+                <div>{children}</div>
               </main>
             </SidebarProvider>
           </ThemeProvider>
