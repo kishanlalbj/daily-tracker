@@ -66,6 +66,8 @@ export function AppSidebar() {
       }
 
       toast.success("Logout successful", { richColors: true });
+
+      // TODO: this is workaround. Look for right approach
       router.refresh();
       router.replace("/");
     } catch (error) {
@@ -81,10 +83,12 @@ export function AppSidebar() {
         <div className="flex items-center gap-2 p-2">
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <div
-              className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
-              onClick={!open ? toggleSidebar : () => {}}
+              className={`flex ${
+                open ? "h-9 w-9 rounded-lg" : "h-5 w-5 rounded-sm"
+              } items-center justify-center  bg-primary text-primary-foreground shrink-0 cursor-pointer hover:opacity-80 transition-opacity`}
+              onClick={toggleSidebar}
             >
-              <TrendingUpIcon className="h-5 w-5" />
+              <TrendingUpIcon className={`${open ? "h-5 w-5" : "h-3 w-3"}`} />
             </div>
             {open && (
               <div className="flex flex-col min-w-0 flex-1">
