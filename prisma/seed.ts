@@ -8,17 +8,6 @@ const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
 
 async function seed() {
-  await prisma.user.createMany({
-    data: [
-      {
-        first_name: "Kishanlal",
-        last_name: "B J",
-        email: "admin@example.com",
-        gender: "male"
-      }
-    ]
-  });
-
   await prisma.category.createMany({
     data: [
       {
