@@ -272,7 +272,7 @@ const DashboardPage = () => {
                 }
                 value={
                   data?.health?.latest?.weight
-                    ? `${data.health.latest.weight} kg`
+                    ? `${Number(data.health.latest.weight).toFixed(1)} kg`
                     : "-"
                 }
               />

@@ -2,7 +2,7 @@ FROM node:24-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json package.lock.json /app/
+COPY package.json package-lock.json /app/
 
 RUN npm ci
 
@@ -23,4 +23,4 @@ COPY --from=builder /app/public ./public
 
 EXPOSE 4000
 
-CMD [ "npm", "start" ]
+CMD [ "node", "server" ]

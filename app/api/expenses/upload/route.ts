@@ -29,15 +29,12 @@ export const POST = async (req: NextRequest) => {
 
     // @ts-expect-error data unkown
     const cleaned = cleanData(data);
-    console.log(cleaned);
 
     const transformed = transformToExpense(cleaned, userId, 10);
 
-    const res = await prisma.expenseTracker.createManyAndReturn({
+    await prisma.expenseTracker.createManyAndReturn({
       data: transformed
     });
-
-    console.log(res);
 
     // data is JSON array
     return NextResponse.json({

@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyJwtToken } from "./lib/helpers";
+import { verifyJwtToken } from "@/lib/jwt";
 
 const PUBLIC_PATHS = ["/", "/api/auth/login", "/api/auth/register"];
 const AUTH_PATHS = ["/", "/api/auth/login", "/api/auth/register"];
 
-export function proxy(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const token = req.cookies.get("token")?.value;
 
-  let decoded: ReturnType<typeof verifyJwtToken> | null = null;
+  let decoded;
 
   if (token) {
     try {
-      decoded = verifyJwtToken(token);
+      decoded = await verifyJwtToken(token);
     } catch {
       decoded = null;
     }
