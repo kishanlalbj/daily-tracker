@@ -7,7 +7,7 @@ import {
   getBodyComposition,
   calculateIdealWeight,
   calculateWeightGoal
-} from "./helpers";
+} from "@/app/api/dashboard/helpers";
 
 export async function GET(req: NextRequest) {
   try {
@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
     ] = await Promise.all([
       // Health data
       prisma.healthTracker.findMany({
-        where: { userId, created_at: dateFilter },
+        where: { userId, created_at: dateFilter, user: { is_deleted: false } },
         select: {
           created_at: true,
           weight: true,
@@ -50,19 +50,19 @@ export async function GET(req: NextRequest) {
 
       // Latest health metrics
       prisma.healthTracker.findFirst({
-        where: { userId },
+        where: { userId, user: { is_deleted: false } },
         orderBy: { created_at: "desc" }
       }),
 
       // User data for gender
       prisma.user.findUnique({
-        where: { id: userId },
+        where: { id: userId, is_deleted: false },
         select: { gender: true, height: true }
       }),
 
       // Total expenses
       prisma.expenseTracker.aggregate({
-        where: { userId, date: dateFilter },
+        where: { userId, date: dateFilter, user: { is_deleted: false } },
         _sum: { amount: true },
         _count: { id: true },
         _avg: { amount: true }
@@ -73,20 +73,20 @@ export async function GET(req: NextRequest) {
         by: ["categoryId"],
         _sum: { amount: true },
         _count: { id: true },
-        where: { userId, date: dateFilter },
+        where: { userId, date: dateFilter, user: { is_deleted: false } },
         orderBy: { _sum: { amount: "desc" } }
       }),
 
       // All expenses for daily trend
       prisma.expenseTracker.findMany({
-        where: { userId, date: dateFilter },
+        where: { userId, date: dateFilter, user: { is_deleted: false } },
         select: { date: true, amount: true },
         orderBy: { date: "asc" }
       }),
 
       // Recent transactions
       prisma.expenseTracker.findMany({
-        where: { userId, date: dateFilter },
+        where: { userId, date: dateFilter, user: { is_deleted: false } },
         include: { category: true },
         orderBy: { date: "desc" },
         take: 10
@@ -96,6 +96,7 @@ export async function GET(req: NextRequest) {
       prisma.expenseTracker.aggregate({
         where: {
           userId,
+          user: { is_deleted: false },
           date: { gte: previousFromDate, lt: fromDate }
         },
         _sum: { amount: true }

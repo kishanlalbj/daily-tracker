@@ -7,7 +7,8 @@ export async function GET(req: NextRequest) {
 
     const user = await prisma.user.findUnique({
       where: {
-        id: Number(userId)
+        id: Number(userId),
+        is_deleted: false
       }
     });
 

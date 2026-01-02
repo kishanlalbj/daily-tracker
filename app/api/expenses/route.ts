@@ -38,7 +38,10 @@ export async function GET(req: NextRequest) {
     const userId = req.headers.get("x-user-id");
     const expenses = await prisma.expenseTracker.findMany({
       where: {
-        userId: Number(userId)
+        userId: Number(userId),
+        user: {
+          is_deleted: false
+        }
       },
       include: {
         category: {

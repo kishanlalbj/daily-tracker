@@ -52,7 +52,7 @@ export default function Home() {
         accessorKey: "weight",
         header: "Weight",
         cell: ({ getValue }) => {
-          return getValue();
+          return `${Number(getValue()).toFixed(2)} kg`;
         }
       },
       {
@@ -66,14 +66,14 @@ export default function Home() {
         accessorKey: "bodyFat",
         header: "Body Fat",
         cell: ({ getValue }) => {
-          return getValue();
+          return `${Number(getValue()).toFixed(2)} %`;
         }
       },
       {
         accessorKey: "bodyFatWeight",
         header: "Body Fat Weight",
         cell: ({ getValue }) => {
-          return getValue();
+          return `${Number(getValue()).toFixed(2)} kg`;
         }
       }
     ],
@@ -109,6 +109,7 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const res = await fetch(`${paths.HEATH_API}`, {
           method: "GET"
         });
@@ -118,6 +119,8 @@ export default function Home() {
       } catch (err) {
         console.log(err);
         toast.error("Error getting data", { richColors: true });
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
@@ -152,7 +155,12 @@ export default function Home() {
       </Dialog>
 
       <div>
-        <DataTable columns={columns} data={data} title="Health Data" />
+        <DataTable
+          columns={columns}
+          data={data}
+          title="Health Data"
+          loading={loading}
+        />
       </div>
     </div>
   );

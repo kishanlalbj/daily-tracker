@@ -22,19 +22,22 @@ import {
 import { ArrowUp, ArrowDown, ArrowUpDownIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
+import { Skeleton } from "./ui/skeleton";
 
 type DataTableProps<TData> = {
   data: TData[];
   columns: ColumnDef<TData, any>[];
   pageSize?: number;
   title: string;
+  loading?: boolean;
 };
 
 export function DataTable<TData>({
   data,
   columns,
   title,
-  pageSize = 10
+  pageSize = 10,
+  loading
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({
@@ -95,11 +98,21 @@ export function DataTable<TData>({
             </TableHeader>
 
             <TableBody>
-              {table.getRowModel().rows.length ? (
+              {loading ? (
+                Array.from({ length: pageSize }).map((_, index) => (
+                  <TableRow key={index}>
+                    {columns.map((_, cellIndex) => (
+                      <TableCell key={cellIndex} className="p-4">
+                        <Skeleton className="h-4 w-full" />
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : table.getRowModel().rows.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow key={row.id}>
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell key={cell.id} className="p-3">
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
@@ -123,14 +136,14 @@ export function DataTable<TData>({
             <Button
               variant={"ghost"}
               onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
+              disabled={!table.getCanPreviousPage() || loading}
             >
               Previous
             </Button>
             <Button
               variant={"ghost"}
               onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
+              disabled={!table.getCanNextPage() || loading}
             >
               Next
             </Button>

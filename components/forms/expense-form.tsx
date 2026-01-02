@@ -45,13 +45,15 @@ type ExpenseFormData = z.infer<typeof ExpenseSchema>;
 
 interface ExpenseFormProps {
   handleSubmit: (data: ExpenseFormData) => void;
+  loading?: boolean;
 }
 
-const ExpenseForm = ({ handleSubmit }: ExpenseFormProps) => {
+const ExpenseForm = ({ handleSubmit, loading }: ExpenseFormProps) => {
   const [categoryOptions, setCategoryOptions] = useState<
     { label: string; value: number }[]
   >([]);
   const [isCategoriesLoading, setIsCategoriesLoading] = useState(false);
+
   const form = useForm({
     resolver: zodResolver(ExpenseSchema),
     defaultValues: {
@@ -233,7 +235,10 @@ const ExpenseForm = ({ handleSubmit }: ExpenseFormProps) => {
             )}
           />
 
-          <Button className="w-full">Add Expense</Button>
+          <Button className="w-full" disabled={loading} type="submit">
+            Add Expense
+            {loading && <Spinner className="ml-2" />}
+          </Button>
         </form>
       </Form>
     </div>

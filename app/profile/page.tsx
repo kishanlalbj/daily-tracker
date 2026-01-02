@@ -48,6 +48,7 @@ type ProfileData = z.infer<typeof ProfileSchema>;
 const ProfilePage = () => {
   const user = useUser();
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const form = useForm<ProfileData>({
@@ -105,6 +106,35 @@ const ProfilePage = () => {
       height: user?.height ? Number(user.height) : undefined
     });
     setIsEditOpen(true);
+  };
+
+  const handleDeleteClick = () => {
+    setIsDeleteOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(paths.DELETE_USERS_API, {
+        method: "DELETE",
+        credentials: "include"
+      });
+      const result = await res.json();
+
+      if (res.ok) {
+        toast.success("Account deleted successfully", { richColors: true });
+        window.location.href = "/";
+      } else {
+        toast.error(result.message || "Failed to delete account", {
+          richColors: true
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Error deleting account", { richColors: true });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -184,6 +214,34 @@ const ProfilePage = () => {
                   {user?.height ? `${user.height} cm` : "-"}
                 </p>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-red-600">
+          <CardHeader className="space-y-1 pb-6">
+            <CardTitle className="text-xl font-semibold">Danger Zone</CardTitle>
+            <CardDescription className="text-base">
+              Manage sensitive account settings
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent>
+            <div className="flex justify-between items-center">
+              <div>
+                <Label className="text-sm font-medium">Delete Account</Label>
+                <p className="mt-2 text-base text-red-600">
+                  Permanently delete your account and all associated data. This
+                  action cannot be undone.
+                </p>
+              </div>
+
+              <Button
+                className="bg-red-500 text-white hover:bg-red-600"
+                onClick={handleDeleteClick}
+              >
+                Delete Account
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -319,6 +377,36 @@ const ProfilePage = () => {
               </div>
             </form>
           </Form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader className="space-y-1">
+            <DialogTitle className="text-xl font-semibold">
+              Delete Account
+            </DialogTitle>
+            <DialogDescription className="text-base">
+              Are you sure you want to delete your account? This action is
+              irreversible and will remove all your data from our system.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-3 pt-6 border-t">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsDeleteOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              className="bg-red-500 text-white hover:bg-red-600"
+              onClick={handleDeleteConfirm}
+            >
+              Confirm {loading && <Spinner />}
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

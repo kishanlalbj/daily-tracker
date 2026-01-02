@@ -17,9 +17,7 @@ import { format } from "date-fns";
 import { Toaster, toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import PageTitle from "@/components/page-title";
-import { Input } from "@/components/ui/input";
 import { formatCurrency } from "@/lib/dashboard-helpers";
-import { info } from "console";
 
 type Expense = {
   id?: string | number;
@@ -33,9 +31,11 @@ type Expense = {
 
 const ExpenseTrackerPage = () => {
   const [data, setData] = useState<Expense[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleExpenseSubmit = async (data: unknown) => {
     try {
+      setLoading(true);
       const res = await fetch(`${paths.EXPENSE_API}`, {
         method: "POST",
         headers: {
@@ -54,12 +54,15 @@ const ExpenseTrackerPage = () => {
       console.log(result);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     const fetchExpenses = async () => {
       try {
+        setLoading(true);
         const res = await fetch(`${paths.EXPENSE_API}`);
 
         const result = await res.json();
@@ -68,6 +71,8 @@ const ExpenseTrackerPage = () => {
       } catch (error) {
         console.error(error);
         toast.error("Error getting data", { richColors: true });
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -115,11 +120,6 @@ const ExpenseTrackerPage = () => {
         subtitle="Track and manage your daily expenses"
         actionSlot={
           <div className="flex items-center gap-4">
-            {/* <div className="flex-inline">
-              <Button type="button" variant={"outline"}>
-                <UploadIcon />
-              </Button>
-            </div> */}
             <Dialog modal={true}>
               <DialogTrigger asChild>
                 <Button variant={"default"}>
@@ -130,17 +130,23 @@ const ExpenseTrackerPage = () => {
                 <DialogHeader>
                   <DialogTitle>Add Expense</DialogTitle>
                 </DialogHeader>
-                <ExpenseForm handleSubmit={handleExpenseSubmit} />
+                <ExpenseForm
+                  handleSubmit={handleExpenseSubmit}
+                  loading={loading}
+                />
               </DialogContent>
             </Dialog>
-            {/* <Input type="file"> */}
-            {/* </Input> */}
           </div>
         }
       ></PageTitle>
 
       <div>
-        <DataTable columns={columns} data={data} title="Expenses" />
+        <DataTable
+          columns={columns}
+          data={data}
+          title="Expenses"
+          loading={loading}
+        />
       </div>
     </div>
   );

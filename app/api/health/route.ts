@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
 
     // Get user's height and gender from User model
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: userId, is_deleted: false },
       select: { height: true, gender: true }
     });
 
@@ -67,7 +67,8 @@ export async function GET(req: NextRequest) {
     const userId = req.headers.get("x-user-id");
     const data = await prisma.healthTracker.findMany({
       where: {
-        userId: Number(userId)
+        userId: Number(userId),
+        user: { is_deleted: false }
       },
       orderBy: {
         created_at: "desc"

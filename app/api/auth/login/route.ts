@@ -10,7 +10,8 @@ export const POST = async (req: NextRequest) => {
 
     const user = await prisma.user.findFirst({
       where: {
-        email
+        email,
+        is_deleted: false
       }
     });
 
