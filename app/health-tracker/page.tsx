@@ -18,6 +18,8 @@ import { Toaster, toast } from "sonner";
 import { format } from "date-fns";
 import { DataTable } from "@/components/data-table";
 import PageTitle from "@/components/page-title";
+import type { DateRange as TDateRange } from "react-day-picker";
+import { DateRangePicker } from "@/components/date-range-picker";
 
 type Measurement = {
   id?: string | number;
@@ -32,6 +34,10 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [shouldShowForm, setShouldShowForm] = useState(false);
   const [data, setData] = useState<Measurement[]>([]);
+  const [dateRange, setDateRange] = useState<TDateRange | undefined>({
+    from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+    to: new Date()
+  });
 
   const columns: ColumnDef<Measurement>[] = useMemo(
     () => [
@@ -110,7 +116,14 @@ export default function Home() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`${paths.HEATH_API}`, {
+        const params = new URLSearchParams();
+        if (dateRange?.from) {
+          params.append("startDate", dateRange.from.toISOString());
+        }
+        if (dateRange?.to) {
+          params.append("endDate", dateRange.to.toISOString());
+        }
+        const res = await fetch(`${paths.HEATH_API}?${params.toString()}`, {
           method: "GET"
         });
         const resData = await res.json();
@@ -124,7 +137,7 @@ export default function Home() {
       }
     };
     fetchData();
-  }, []);
+  }, [dateRange]);
 
   return (
     <div className="container mx-auto px-4 py-6 md:py-8 lg:py-10 max-w-7xl">
@@ -134,11 +147,12 @@ export default function Home() {
         title="Health Tracker"
         subtitle="Monitor your body measurements and health progress"
         actionSlot={
-          <>
+          <div className="flex items-center gap-3">
+            <DateRangePicker value={dateRange} onChange={setDateRange} />
             <Button onClick={() => setShouldShowForm(true)}>
               <PlusIcon /> Measurement
             </Button>
-          </>
+          </div>
         }
       ></PageTitle>
 

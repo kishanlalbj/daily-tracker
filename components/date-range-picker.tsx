@@ -111,6 +111,7 @@ export function DateRangePicker({
                 selected={value}
                 onSelect={onChange}
                 numberOfMonths={1}
+                disabled={(date) => date > new Date()}
                 className="sm:hidden"
               />
               <Calendar
@@ -118,7 +119,8 @@ export function DateRangePicker({
                 defaultMonth={value?.from}
                 selected={value}
                 onSelect={onChange}
-                numberOfMonths={2}
+                numberOfMonths={1}
+                disabled={(date) => date > new Date()}
                 className="hidden sm:block"
               />
             </div>

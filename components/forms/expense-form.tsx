@@ -32,7 +32,8 @@ const ExpenseSchema = z.object({
   expense_title: z.string().min(1, "Expense title is required"),
   amount: z.coerce.number().min(0.01, "Amount must be greater than 0"),
   category: z.coerce.number().min(1, "Category is required"),
-  date: z.date()
+  date: z.date(),
+  categoryId: z.number().optional()
 });
 
 type Category = {
@@ -44,11 +45,19 @@ type Category = {
 type ExpenseFormData = z.infer<typeof ExpenseSchema>;
 
 interface ExpenseFormProps {
+  data?: ExpenseFormData | null;
   handleSubmit: (data: ExpenseFormData) => void;
   loading?: boolean;
+  mode?: "add" | "edit";
 }
 
-const ExpenseForm = ({ handleSubmit, loading }: ExpenseFormProps) => {
+const ExpenseForm = ({
+  data,
+  handleSubmit,
+  loading,
+  mode = "add"
+}: ExpenseFormProps) => {
+  console.log({ data });
   const [categoryOptions, setCategoryOptions] = useState<
     { label: string; value: number }[]
   >([]);
@@ -57,10 +66,10 @@ const ExpenseForm = ({ handleSubmit, loading }: ExpenseFormProps) => {
   const form = useForm({
     resolver: zodResolver(ExpenseSchema),
     defaultValues: {
-      date: undefined,
-      expense_title: "",
-      amount: "",
-      category: ""
+      date: data?.date ? new Date(data.date) : new Date(),
+      expense_title: data?.expense_title || "",
+      amount: data?.amount || "",
+      category: data?.categoryId || ""
     }
   });
   const [open, setOpen] = useState(false);
@@ -236,7 +245,7 @@ const ExpenseForm = ({ handleSubmit, loading }: ExpenseFormProps) => {
           />
 
           <Button className="w-full" disabled={loading} type="submit">
-            Add Expense
+            {mode === "add" ? "Add Expense" : "Update Expense"}
             {loading && <Spinner className="ml-2" />}
           </Button>
         </form>

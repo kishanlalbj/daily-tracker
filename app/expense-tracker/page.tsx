@@ -9,7 +9,7 @@ import {
   DialogTrigger
 } from "@/components/ui/dialog";
 import { ColumnDef } from "@tanstack/react-table";
-import { PlusIcon } from "lucide-react";
+import { Edit2Icon, PlusIcon, TrashIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import ExpenseForm from "@/components/forms/expense-form";
 import { paths } from "@/constants";
@@ -18,12 +18,27 @@ import { Toaster, toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import PageTitle from "@/components/page-title";
 import { formatCurrency } from "@/lib/dashboard-helpers";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from "@/components/ui/alert-dialog";
+import { Spinner } from "@/components/ui/spinner";
+import { DateRangePicker } from "@/components/date-range-picker";
+import type { DateRange as TDateRange } from "react-day-picker";
 
 type Expense = {
   id?: string | number;
   date: string;
   expense_title: string;
   amount: number;
+  categoryId?: number;
   category: {
     title: string;
   };
@@ -32,6 +47,14 @@ type Expense = {
 const ExpenseTrackerPage = () => {
   const [data, setData] = useState<Expense[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [dateRange, setDateRange] = useState<TDateRange | undefined>({
+    from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+    to: new Date()
+  });
+
+  const [loaders, setLoaders] = useState({
+    delete: false
+  });
 
   const handleExpenseSubmit = async (data: unknown) => {
     try {
@@ -51,11 +74,55 @@ const ExpenseTrackerPage = () => {
       toast.success("Data saved successfully", {
         richColors: true
       });
-      console.log(result);
     } catch (error) {
       console.error(error);
+      toast.error("Error saving data", { richColors: true });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleEditExpense = async (id: string | number, data: Expense) => {
+    try {
+      setLoading(true);
+      const res = await fetch(`${paths.EXPENSE_API}/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ ...data })
+      });
+
+      const result = await res.json();
+
+      setData((prev) =>
+        prev.map((expense) =>
+          expense.id === result.data.id ? { ...result.data } : expense
+        )
+      );
+      toast.success("Expense updated successfully", { richColors: true });
+    } catch (error) {
+      console.error(error);
+      toast.error("Error updating expense", { richColors: true });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string | number) => {
+    try {
+      setLoaders((prev) => ({ ...prev, delete: true }));
+      await fetch(`${paths.EXPENSE_API}/${id}`, {
+        method: "DELETE"
+      });
+      setData((prev) => prev.filter((expense) => expense.id !== id));
+      toast.success("Expense deleted successfully", { richColors: true });
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Error deleting expense";
+      toast.error(errorMessage, { richColors: true });
+    } finally {
+      setLoaders((prev) => ({ ...prev, delete: false }));
     }
   };
 
@@ -63,7 +130,14 @@ const ExpenseTrackerPage = () => {
     const fetchExpenses = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`${paths.EXPENSE_API}`);
+        const params = new URLSearchParams();
+        if (dateRange?.from) {
+          params.append("startDate", dateRange.from.toISOString());
+        }
+        if (dateRange?.to) {
+          params.append("endDate", dateRange.to.toISOString());
+        }
+        const res = await fetch(`${paths.EXPENSE_API}?${params.toString()}`);
 
         const result = await res.json();
 
@@ -77,7 +151,7 @@ const ExpenseTrackerPage = () => {
     };
 
     fetchExpenses();
-  }, []);
+  }, [dateRange]);
 
   const columns: ColumnDef<Expense>[] = useMemo(
     () => [
@@ -92,7 +166,11 @@ const ExpenseTrackerPage = () => {
       {
         accessorKey: "expense_title",
         header: "Expense Title",
-        cell: ({ getValue }) => getValue()
+        cell: ({ getValue }) => (
+          <p className="whitespace-normal wrap-break-words">
+            {getValue() as string}
+          </p>
+        )
       },
       {
         accessorKey: "category",
@@ -106,9 +184,73 @@ const ExpenseTrackerPage = () => {
         accessorKey: "amount",
         header: "Amount",
         cell: ({ getValue }) => `- ${formatCurrency(getValue() as number)}`
+      },
+      {
+        accessorKey: "Actions",
+        header: "Actions",
+        cell: ({ row }) => (
+          <div className="flex items-center gap-2">
+            <Dialog modal={true}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size={"icon-sm"}>
+                  <Edit2Icon />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Edit Expense</DialogTitle>
+                </DialogHeader>
+                <ExpenseForm
+                  data={{
+                    ...row.original,
+                    category: row.original.categoryId || 0,
+                    date: new Date(row.original.date)
+                  }}
+                  handleSubmit={(data) =>
+                    handleEditExpense(
+                      row.original.id as string | number,
+                      data as unknown as Expense
+                    )
+                  }
+                  loading={loading}
+                  mode="edit"
+                />
+              </DialogContent>
+            </Dialog>
+
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size={"icon-sm"}>
+                  <TrashIcon />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    the expense from our database.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() =>
+                      row.original.id !== undefined &&
+                      handleDelete(row.original.id)
+                    }
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                  >
+                    Delete {loaders.delete ? <Spinner /> : ""}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        )
       }
     ],
-    []
+    [loaders.delete, loading]
   );
 
   return (
@@ -120,6 +262,7 @@ const ExpenseTrackerPage = () => {
         subtitle="Track and manage your daily expenses"
         actionSlot={
           <div className="flex items-center gap-4">
+            <DateRangePicker value={dateRange} onChange={setDateRange} />
             <Dialog modal={true}>
               <DialogTrigger asChild>
                 <Button variant={"default"}>

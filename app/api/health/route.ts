@@ -2,6 +2,7 @@ export const runtime = "nodejs";
 import { NextRequest, NextResponse } from "next/server";
 import { calculateAverage, calculateBMI, calculateBodyFat } from "./formulas";
 import prisma from "@/lib/prisma";
+import { getDateRange } from "../dashboard/helpers";
 
 export async function POST(req: NextRequest) {
   try {
@@ -65,10 +66,15 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const userId = req.headers.get("x-user-id");
+    const { searchParams } = new URL(req.url);
+    const { fromDate, toDate } = getDateRange(searchParams);
+    const dateFilter = { gte: fromDate, lt: toDate };
+
     const data = await prisma.healthTracker.findMany({
       where: {
         userId: Number(userId),
-        user: { is_deleted: false }
+        user: { is_deleted: false },
+        created_at: dateFilter
       },
       orderBy: {
         created_at: "desc"
