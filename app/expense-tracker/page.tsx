@@ -177,7 +177,7 @@ const ExpenseTrackerPage = () => {
         header: "Category",
         cell: ({ getValue }) => {
           const cat = getValue() as { title: string };
-          return <Badge variant="default">{cat.title}</Badge>;
+          return <Badge variant="secondary">{cat.title}</Badge>;
         }
       },
       {
