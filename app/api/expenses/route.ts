@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
+import { getDateRange } from "../dashboard/helpers";
 
 export async function POST(req: NextRequest) {
   try {
@@ -36,12 +37,18 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const userId = req.headers.get("x-user-id");
+
+    const { searchParams } = new URL(req.url);
+    const { fromDate, toDate } = getDateRange(searchParams);
+    const dateFilter = { gte: fromDate, lt: toDate };
+
     const expenses = await prisma.expenseTracker.findMany({
       where: {
         userId: Number(userId),
         user: {
           is_deleted: false
-        }
+        },
+        date: dateFilter
       },
       include: {
         category: {

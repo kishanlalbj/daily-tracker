@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Papa from "papaparse";
 import { cleanData, transformToExpense } from "./clean";
-import { Prisma } from "@/generated/prisma/client";
 import prisma from "@/lib/prisma";
 
 export const POST = async (req: NextRequest) => {

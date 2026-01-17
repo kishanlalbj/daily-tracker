@@ -140,6 +140,27 @@ export function DataTable<TData>({
             >
               Previous
             </Button>
+
+            {/* select page size */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm">Rows per page:</span>
+              <select
+                value={table.getState().pagination.pageSize}
+                onChange={(e) => {
+                  table.setPageSize(Number(e.target.value));
+                }}
+              >
+                {[10, 20, 30, 40, 50].map((pageSize) => (
+                  <option
+                    key={pageSize}
+                    value={pageSize}
+                    className="text-secondary"
+                  >
+                    {pageSize}
+                  </option>
+                ))}
+              </select>
+            </div>
             <Button
               variant={"ghost"}
               onClick={() => table.nextPage()}
