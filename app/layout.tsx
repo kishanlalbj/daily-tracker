@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { getCurrentUser } from "@/lib/helpers";
 import { UserProvider } from "@/contexts/UserContext";
 import { User } from "@/types";
+import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

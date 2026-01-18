@@ -1,44 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import Papa from "papaparse";
-import { cleanData, transformToExpense } from "./clean";
 import prisma from "@/lib/prisma";
 
 export const POST = async (req: NextRequest) => {
   try {
-    const formData = await req.formData();
+    const data = await req.json();
 
-    const userId = Number(req.headers.get("x-user-id"));
-
-    const file = formData.get("file");
-
-    if (!file || !(file instanceof File)) {
-      return NextResponse.json({ error: "No file" }, { status: 400 });
-    }
-
-    const csvText = await file.text();
-
-    const { data, errors } = Papa.parse(csvText, {
-      header: true, // first row → keys
-      skipEmptyLines: true
+    const result = await prisma.expenseTracker.createManyAndReturn({
+      data
     });
 
-    if (errors.length) {
-      return NextResponse.json({ errors }, { status: 400 });
-    }
-
-    // @ts-expect-error data unkown
-    const cleaned = cleanData(data);
-
-    const transformed = transformToExpense(cleaned, userId, 10);
-
-    await prisma.expenseTracker.createManyAndReturn({
-      data: transformed
-    });
-
-    // data is JSON array
     return NextResponse.json({
-      rows: data.length,
-      data: transformed
+      data: result
     });
   } catch (error) {
     console.error(error);

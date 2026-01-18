@@ -43,7 +43,7 @@ const Page = () => {
       router.refresh();
       router.replace("/dashboard");
     } catch (err) {
-      console.error("Login failed:", err);
+      console.error(err);
       toast.error("An error occurred during login", { richColors: true });
     } finally {
       setLoading(false);
@@ -74,7 +74,6 @@ const Page = () => {
       handleToggleForm();
       toast.success("Registration successful", { richColors: true });
     } catch (err) {
-      console.error("Registration failed:", err);
       toast.error("An error occurred during registration", {
         richColors: true
       });

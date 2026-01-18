@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
-
 import {
   Command,
   CommandEmpty,
@@ -57,7 +56,6 @@ const ExpenseForm = ({
   loading,
   mode = "add"
 }: ExpenseFormProps) => {
-  console.log({ data });
   const [categoryOptions, setCategoryOptions] = useState<
     { label: string; value: number }[]
   >([]);
@@ -202,23 +200,29 @@ const ExpenseForm = ({
                   </PopoverTrigger>
 
                   <PopoverContent
-                    className="w-full p-0"
+                    className="w-full p-0 overflow-hidden"
                     style={{ width: "var(--radix-popover-trigger-width)" }}
                     align="start"
                   >
-                    <Command className="w-full">
+                    <Command className="w-full overflow-hidden md:min-w-[450px]">
                       <CommandInput placeholder="Search category..." />
 
                       {isCategoriesLoading ? (
-                        <div>
+                        <div className="p-2">
                           <Spinner />
                         </div>
                       ) : (
                         <>
-                          <CommandEmpty>No category found.</CommandEmpty>
+                          <CommandEmpty className="p-2">
+                            No category found.
+                          </CommandEmpty>
 
-                          <CommandGroup>
-                            <CommandList>
+                          <CommandGroup className="overflow-hidden">
+                            <CommandList
+                              onWheel={(e) => {
+                                e.stopPropagation();
+                              }}
+                            >
                               {categoryOptions.map((opt) => (
                                 <CommandItem
                                   key={opt.value}

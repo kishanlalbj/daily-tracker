@@ -9,7 +9,7 @@ import {
   DialogTrigger
 } from "@/components/ui/dialog";
 import { ColumnDef } from "@tanstack/react-table";
-import { Edit2Icon, PlusIcon, TrashIcon } from "lucide-react";
+import { Edit2Icon, PlusIcon, TrashIcon, UploadIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import ExpenseForm from "@/components/forms/expense-form";
 import { paths } from "@/constants";
@@ -33,6 +33,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { DateRangePicker } from "@/components/date-range-picker";
 import type { DateRange as TDateRange } from "react-day-picker";
 import { Expense } from "@/types";
+import Link from "next/link";
 
 const ExpenseTrackerPage = () => {
   const [data, setData] = useState<Expense[]>([]);
@@ -257,6 +258,34 @@ const ExpenseTrackerPage = () => {
     [loaders.delete, loading]
   );
 
+  const ExpenseActions = () => {
+    return (
+      <div className="flex items-center gap-4">
+        <DateRangePicker value={dateRange} onChange={setDateRange} />
+        <div>
+          <Link href="/expense-tracker/import">
+            <Button variant={"outline"}>
+              <UploadIcon />
+            </Button>
+          </Link>
+        </div>
+        <Dialog modal={true}>
+          <DialogTrigger asChild>
+            <Button variant={"default"}>
+              <PlusIcon /> Expense
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add Expense</DialogTitle>
+            </DialogHeader>
+            <ExpenseForm handleSubmit={handleExpenseSubmit} loading={loading} />
+          </DialogContent>
+        </Dialog>
+      </div>
+    );
+  };
+
   return (
     <div className="container mx-auto px-4 py-6 md:py-8 lg:py-10 max-w-7xl">
       <Toaster />
@@ -264,27 +293,7 @@ const ExpenseTrackerPage = () => {
       <PageTitle
         title="Expense Tracker"
         subtitle="Track and manage your daily expenses"
-        actionSlot={
-          <div className="flex items-center gap-4">
-            <DateRangePicker value={dateRange} onChange={setDateRange} />
-            <Dialog modal={true}>
-              <DialogTrigger asChild>
-                <Button variant={"default"}>
-                  <PlusIcon /> Expense
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Add Expense</DialogTitle>
-                </DialogHeader>
-                <ExpenseForm
-                  handleSubmit={handleExpenseSubmit}
-                  loading={loading}
-                />
-              </DialogContent>
-            </Dialog>
-          </div>
-        }
+        actionSlot={<ExpenseActions />}
       ></PageTitle>
 
       <div>
