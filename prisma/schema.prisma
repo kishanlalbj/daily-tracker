@@ -20,13 +20,21 @@ enum Gender {
   unknown
 }
 
+enum Provider {
+  local
+  google
+}
+
 model User {
   id Int @id @default(autoincrement())
   first_name String
   last_name String
-  email String
-  password String @default("password_not_set")
+  email String @unique
+  password String?
   gender Gender? @default(unknown)
+  avatar String?
+  provider Provider
+  providerId String?
   height Decimal? @db.Decimal
   is_deleted Boolean @default(false)
   created_at DateTime @default(now())

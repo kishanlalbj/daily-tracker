@@ -11,7 +11,6 @@ export async function POST(req: NextRequest) {
 
     const { weight, waist, neck } = data;
 
-    // Get user's height and gender from User model
     const user = await prisma.user.findUnique({
       where: { id: userId, is_deleted: false },
       select: { height: true, gender: true }
@@ -20,6 +19,15 @@ export async function POST(req: NextRequest) {
     if (!user?.height) {
       return NextResponse.json(
         { message: "User height not set. Please update your profile." },
+        { status: 400 }
+      );
+    }
+
+    if (!user.gender) {
+      return NextResponse.json(
+        {
+          message: "Gender not set. Please update your profile"
+        },
         { status: 400 }
       );
     }

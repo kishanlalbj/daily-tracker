@@ -30,7 +30,8 @@ export const POST = async (req: NextRequest) => {
         email,
         password: hashedPassword,
         gender,
-        height
+        height,
+        provider: "local"
       }
     });
 

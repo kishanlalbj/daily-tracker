@@ -96,9 +96,15 @@ export default function Home() {
         },
         body: JSON.stringify(data)
       });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Failed to save measurement");
+      }
+
       const resData = await res.json();
 
-      setData((prev) => [...prev, { ...resData.data }]);
+      setData((prev) => [...prev, resData.data]);
 
       toast.success("Data saved successfully", {
         richColors: true
@@ -106,7 +112,10 @@ export default function Home() {
 
       setShouldShowForm(false);
     } catch (err) {
-      console.log(err);
+      const errorMessage =
+        err instanceof Error ? err.message : "Error saving data";
+      console.error("Error:", err);
+      toast.error(errorMessage, { richColors: true });
     } finally {
       setLoading(false);
     }
@@ -126,12 +135,20 @@ export default function Home() {
         const res = await fetch(`${paths.HEATH_API}?${params.toString()}`, {
           method: "GET"
         });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.message || "Failed to save measurement");
+        }
+
         const resData = await res.json();
 
         setData(resData.data);
       } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Error saving data";
         console.log(err);
-        toast.error("Error getting data", { richColors: true });
+        toast.error(errorMessage || "Error getting data", { richColors: true });
       } finally {
         setLoading(false);
       }

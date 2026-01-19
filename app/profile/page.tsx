@@ -34,6 +34,8 @@ import { toast, Toaster } from "sonner";
 import { paths } from "@/constants";
 import { Pencil } from "lucide-react";
 import PageTitle from "@/components/page-title";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Image from "next/image";
 
 const ProfileSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -47,6 +49,7 @@ type ProfileData = z.infer<typeof ProfileSchema>;
 
 const ProfilePage = () => {
   const user = useUser();
+  console.log({ user });
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -162,6 +165,25 @@ const ProfilePage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
+            <div>
+              {user?.avatar ? (
+                <Image
+                  src={user?.avatar as string}
+                  alt="avatar"
+                  width={"48"}
+                  height={"48"}
+                  className="rounded-full"
+                />
+              ) : (
+                <Avatar className="w-[48] h-[48]">
+                  <AvatarImage src={user?.avatar} alt="@shadcn" />
+                  <AvatarFallback className="capitalize">
+                    {user?.first_name[0]}
+                    {user?.last_name[0]}
+                  </AvatarFallback>
+                </Avatar>
+              )}
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
                 <Label className="text-sm font-medium text-muted-foreground">

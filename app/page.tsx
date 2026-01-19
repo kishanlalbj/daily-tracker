@@ -83,6 +83,10 @@ const Page = () => {
     }
   };
 
+  const handleGoogleLogon = async () => {
+    window.location.href = "/api/auth/google";
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <Toaster />
@@ -94,6 +98,7 @@ const Page = () => {
           <LoginForm
             onSubmit={handleLoginSubmit}
             onToggle={handleToggleForm}
+            onGoogleLogon={handleGoogleLogon}
             loading={loading}
           />
         ) : (

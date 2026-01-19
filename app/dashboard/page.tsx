@@ -18,6 +18,7 @@ import PageTitle from "@/components/page-title";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TrendingDownIcon, TrendingUpIcon } from "lucide-react";
 import Loading from "./loading";
+import { toast } from "sonner";
 
 type DashboardData = {
   health: {
@@ -119,11 +120,19 @@ const DashboardPage = () => {
 
         const res = await fetch(`${paths.DASHBOARD_API}?${params.toString()}`);
 
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.message || "Failed to fetch dashboard");
+        }
+
         const result = await res.json();
 
         setData(result?.data);
-      } catch (error) {
-        console.error(error);
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Error fetching data";
+        console.error("Error:", err);
+        toast.error(errorMessage, { richColors: true });
       } finally {
         setLoading(false);
       }
