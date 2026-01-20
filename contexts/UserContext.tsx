@@ -9,7 +9,7 @@ type User = {
   email: string;
   gender: "male" | "female" | null;
   height: number | null;
-  avatar?: string;
+  avatar?: string | null;
   created_at: Date;
 } | null;
 
