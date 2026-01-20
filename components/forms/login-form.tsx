@@ -104,7 +104,7 @@ const LoginForm = ({
               className="w-full md:w-sm"
             >
               <Image src="/google.svg" alt="google" width={20} height={20} />
-              Google
+              Sign in with Google
             </Button>
 
             <p className="ml-1">
