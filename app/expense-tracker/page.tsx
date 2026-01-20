@@ -32,17 +32,7 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { DateRangePicker } from "@/components/date-range-picker";
 import type { DateRange as TDateRange } from "react-day-picker";
-
-type Expense = {
-  id?: string | number;
-  date: string;
-  expense_title: string;
-  amount: number;
-  categoryId?: number;
-  category: {
-    title: string;
-  };
-};
+import { Expense } from "@/types";
 
 const ExpenseTrackerPage = () => {
   const [data, setData] = useState<Expense[]>([]);

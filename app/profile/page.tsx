@@ -41,7 +41,7 @@ const ProfileSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   email: z.email("Invalid email address"),
-  gender: z.enum(["male", "female", "other", "unknown"]),
+  gender: z.enum(["male", "female"], "Select either male or female"),
   height: z.number().min(30).max(250).optional()
 });
 
@@ -49,7 +49,6 @@ type ProfileData = z.infer<typeof ProfileSchema>;
 
 const ProfilePage = () => {
   const user = useUser();
-  console.log({ user });
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -60,8 +59,7 @@ const ProfilePage = () => {
       firstName: user?.first_name || "",
       lastName: user?.last_name || "",
       email: user?.email || "",
-      gender:
-        (user?.gender as "male" | "female" | "other" | "unknown") || "unknown",
+      gender: user?.gender as "male" | "female",
       height: user?.height ? Number(user.height) : undefined
     }
   });
@@ -104,8 +102,7 @@ const ProfilePage = () => {
       firstName: user?.first_name || "",
       lastName: user?.last_name || "",
       email: user?.email || "",
-      gender:
-        (user?.gender as "male" | "female" | "other" | "unknown") || "unknown",
+      gender: user?.gender as "male" | "female",
       height: user?.height ? Number(user.height) : undefined
     });
     setIsEditOpen(true);
@@ -207,7 +204,11 @@ const ProfilePage = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card
+          className={
+            !user?.gender || !user.height ? "border border-amber-500" : ""
+          }
+        >
           <CardHeader className="space-y-1 pb-6">
             <CardTitle className="text-xl font-semibold">
               Health Information
@@ -222,11 +223,7 @@ const ProfilePage = () => {
                 <Label className="text-sm font-medium text-muted-foreground">
                   Gender
                 </Label>
-                <p className="mt-2 text-base capitalize">
-                  {user?.gender === "unknown"
-                    ? "Prefer not to say"
-                    : user?.gender || "-"}
-                </p>
+                <p className="mt-2 text-base capitalize">{user?.gender}</p>
               </div>
               <div>
                 <Label className="text-sm font-medium text-muted-foreground">
@@ -344,10 +341,6 @@ const ProfilePage = () => {
                           <SelectContent>
                             <SelectItem value="male">Male</SelectItem>
                             <SelectItem value="female">Female</SelectItem>
-                            <SelectItem value="other">Other</SelectItem>
-                            <SelectItem value="unknown">
-                              Prefer not to say
-                            </SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />

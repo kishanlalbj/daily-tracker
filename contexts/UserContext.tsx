@@ -7,7 +7,7 @@ type User = {
   first_name: string;
   last_name: string;
   email: string;
-  gender: "male" | "female" | "other" | "unknown" | null;
+  gender: "male" | "female" | null;
   height: number | null;
   avatar?: string;
   created_at: Date;

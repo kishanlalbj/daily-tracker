@@ -51,6 +51,17 @@ export async function GET(req: NextRequest) {
       where: { email: user.email, is_deleted: false }
     });
 
+    if (dbUser && !dbUser.avatar) {
+      await prisma.user.update({
+        where: {
+          email: user.email
+        },
+        data: {
+          avatar: user.picture || ""
+        }
+      });
+    }
+
     if (!dbUser) {
       dbUser = await prisma.user.create({
         data: {
