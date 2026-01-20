@@ -173,7 +173,7 @@ const ProfilePage = () => {
                 />
               ) : (
                 <Avatar className="w-[48] h-[48]">
-                  <AvatarImage src={user?.avatar} alt="@shadcn" />
+                  <AvatarImage src={user?.avatar || undefined} alt="@shadcn" />
                   <AvatarFallback className="capitalize">
                     {user?.first_name[0]}
                     {user?.last_name[0]}
