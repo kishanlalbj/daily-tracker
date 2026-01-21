@@ -32,17 +32,7 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { DateRangePicker } from "@/components/date-range-picker";
 import type { DateRange as TDateRange } from "react-day-picker";
-
-type Expense = {
-  id?: string | number;
-  date: string;
-  expense_title: string;
-  amount: number;
-  categoryId?: number;
-  category: {
-    title: string;
-  };
-};
+import { Expense } from "@/types";
 
 const ExpenseTrackerPage = () => {
   const [data, setData] = useState<Expense[]>([]);
@@ -93,6 +83,11 @@ const ExpenseTrackerPage = () => {
         body: JSON.stringify({ ...data })
       });
 
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Failed to edit expense");
+      }
+
       const result = await res.json();
 
       setData((prev) =>
@@ -112,9 +107,13 @@ const ExpenseTrackerPage = () => {
   const handleDelete = async (id: string | number) => {
     try {
       setLoaders((prev) => ({ ...prev, delete: true }));
-      await fetch(`${paths.EXPENSE_API}/${id}`, {
+      const res = await fetch(`${paths.EXPENSE_API}/${id}`, {
         method: "DELETE"
       });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Failed to delete expense");
+      }
       setData((prev) => prev.filter((expense) => expense.id !== id));
       toast.success("Expense deleted successfully", { richColors: true });
     } catch (err) {
@@ -138,6 +137,11 @@ const ExpenseTrackerPage = () => {
           params.append("endDate", dateRange.to.toISOString());
         }
         const res = await fetch(`${paths.EXPENSE_API}?${params.toString()}`);
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.message || "Failed to fetch expenses");
+        }
 
         const result = await res.json();
 

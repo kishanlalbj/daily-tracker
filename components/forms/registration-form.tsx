@@ -32,7 +32,7 @@ const RegistrationSchema = z
     confirmPassword: z
       .string()
       .min(6, "Confirm Password must be at least 6 characters long"),
-    gender: z.enum(["male", "female", "other", "unknown"], {
+    gender: z.enum(["male", "female"], {
       message: "Gender is required"
     }),
     height: z.number().min(30).max(250)
@@ -185,7 +185,6 @@ const RegistrationForm = ({
                       <SelectContent>
                         <SelectItem value="male">Male</SelectItem>
                         <SelectItem value="female">Female</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

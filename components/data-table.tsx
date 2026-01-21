@@ -131,7 +131,6 @@ export function DataTable<TData>({
             </TableBody>
           </Table>
 
-          {/* Pagination */}
           <div className="flex items-center justify-between mt-4">
             <Button
               variant={"ghost"}
@@ -141,7 +140,6 @@ export function DataTable<TData>({
               Previous
             </Button>
 
-            {/* select page size */}
             <div className="flex items-center gap-2">
               <span className="text-sm">Rows per page:</span>
               <select

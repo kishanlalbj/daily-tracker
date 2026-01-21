@@ -34,12 +34,14 @@ import { toast, Toaster } from "sonner";
 import { paths } from "@/constants";
 import { Pencil } from "lucide-react";
 import PageTitle from "@/components/page-title";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Image from "next/image";
 
 const ProfileSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   email: z.email("Invalid email address"),
-  gender: z.enum(["male", "female", "other", "unknown"]),
+  gender: z.enum(["male", "female"], "Select either male or female"),
   height: z.number().min(30).max(250).optional()
 });
 
@@ -57,8 +59,7 @@ const ProfilePage = () => {
       firstName: user?.first_name || "",
       lastName: user?.last_name || "",
       email: user?.email || "",
-      gender:
-        (user?.gender as "male" | "female" | "other" | "unknown") || "unknown",
+      gender: user?.gender as "male" | "female",
       height: user?.height ? Number(user.height) : undefined
     }
   });
@@ -101,8 +102,7 @@ const ProfilePage = () => {
       firstName: user?.first_name || "",
       lastName: user?.last_name || "",
       email: user?.email || "",
-      gender:
-        (user?.gender as "male" | "female" | "other" | "unknown") || "unknown",
+      gender: user?.gender as "male" | "female",
       height: user?.height ? Number(user.height) : undefined
     });
     setIsEditOpen(true);
@@ -162,6 +162,25 @@ const ProfilePage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
+            <div>
+              {user?.avatar ? (
+                <Image
+                  src={user?.avatar as string}
+                  alt="avatar"
+                  width={"48"}
+                  height={"48"}
+                  className="rounded-full"
+                />
+              ) : (
+                <Avatar className="w-[48] h-[48]">
+                  <AvatarImage src={user?.avatar || undefined} alt="@shadcn" />
+                  <AvatarFallback className="capitalize">
+                    {user?.first_name[0]}
+                    {user?.last_name[0]}
+                  </AvatarFallback>
+                </Avatar>
+              )}
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
                 <Label className="text-sm font-medium text-muted-foreground">
@@ -185,7 +204,11 @@ const ProfilePage = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card
+          className={
+            !user?.gender || !user.height ? "border border-amber-500" : ""
+          }
+        >
           <CardHeader className="space-y-1 pb-6">
             <CardTitle className="text-xl font-semibold">
               Health Information
@@ -200,11 +223,7 @@ const ProfilePage = () => {
                 <Label className="text-sm font-medium text-muted-foreground">
                   Gender
                 </Label>
-                <p className="mt-2 text-base capitalize">
-                  {user?.gender === "unknown"
-                    ? "Prefer not to say"
-                    : user?.gender || "-"}
-                </p>
+                <p className="mt-2 text-base capitalize">{user?.gender}</p>
               </div>
               <div>
                 <Label className="text-sm font-medium text-muted-foreground">
@@ -322,10 +341,6 @@ const ProfilePage = () => {
                           <SelectContent>
                             <SelectItem value="male">Male</SelectItem>
                             <SelectItem value="female">Female</SelectItem>
-                            <SelectItem value="other">Other</SelectItem>
-                            <SelectItem value="unknown">
-                              Prefer not to say
-                            </SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />

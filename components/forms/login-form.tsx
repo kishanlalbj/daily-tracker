@@ -2,6 +2,7 @@
 import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,11 +25,17 @@ export type LoginData = z.infer<typeof LoginSchema>;
 
 interface LoadingFormProps {
   onSubmit: (data: LoginData) => void;
+  onGoogleLogon: () => void;
   onToggle: () => void;
   loading?: boolean;
 }
 
-const LoginForm = ({ onSubmit, onToggle, loading }: LoadingFormProps) => {
+const LoginForm = ({
+  onSubmit,
+  onGoogleLogon,
+  onToggle,
+  loading
+}: LoadingFormProps) => {
   const form = useForm({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -84,11 +91,22 @@ const LoginForm = ({ onSubmit, onToggle, loading }: LoadingFormProps) => {
             ></FormField>
           </CardContent>
 
-          <CardFooter className="mt-4 flex-col items-center gap-2">
+          <CardFooter className="mt-4 flex-col items-center gap-4">
             <Button type="submit" disabled={loading} className="w-full md:w-sm">
               Login
               {loading && <Spinner />}
             </Button>
+
+            <Button
+              variant={"secondary"}
+              type="button"
+              onClick={onGoogleLogon}
+              className="w-full md:w-sm"
+            >
+              <Image src="/google.svg" alt="google" width={20} height={20} />
+              Sign in with Google
+            </Button>
+
             <p className="ml-1">
               Don&apos;t have an account ?{" "}
               <Button type="button" variant={"link"} onClick={onToggle}>

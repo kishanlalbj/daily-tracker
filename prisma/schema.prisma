@@ -16,20 +16,27 @@ datasource db {
 enum Gender {
   male
   female
-  other
-  unknown
+}
+
+enum Provider {
+  local
+  google
 }
 
 model User {
   id Int @id @default(autoincrement())
   first_name String
   last_name String
-  email String
-  password String @default("password_not_set")
-  gender Gender? @default(unknown)
+  email String @unique
+  password String?
+  gender Gender?
+  avatar String?
+  provider Provider
+  providerId String?
   height Decimal? @db.Decimal
   is_deleted Boolean @default(false)
   created_at DateTime @default(now())
+  last_login_at DateTime?
 
   healthTrackers HealthTracker[]
   expenseTrackers ExpenseTracker[]

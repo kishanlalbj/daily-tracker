@@ -12,7 +12,7 @@ import {
   DialogTitle
 } from "@/components/ui/dialog";
 import { paths } from "@/constants";
-import { PlusIcon } from "lucide-react";
+import { AlertCircleIcon, PlusIcon } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Toaster, toast } from "sonner";
 import { format } from "date-fns";
@@ -20,17 +20,13 @@ import { DataTable } from "@/components/data-table";
 import PageTitle from "@/components/page-title";
 import type { DateRange as TDateRange } from "react-day-picker";
 import { DateRangePicker } from "@/components/date-range-picker";
-
-type Measurement = {
-  id?: string | number;
-  created_at: string;
-  weight: number;
-  bmi: number;
-  bodyFat: number;
-  bodyFatWeight?: number;
-};
+import { useUser } from "@/contexts/UserContext";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import Link from "next/link";
+import { Measurement } from "@/types";
 
 export default function Home() {
+  const user = useUser();
   const [loading, setLoading] = useState(false);
   const [shouldShowForm, setShouldShowForm] = useState(false);
   const [data, setData] = useState<Measurement[]>([]);
@@ -38,6 +34,8 @@ export default function Home() {
     from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
     to: new Date()
   });
+
+  const btnDisabled = !user?.gender || !user.height;
 
   const columns: ColumnDef<Measurement>[] = useMemo(
     () => [
@@ -96,9 +94,15 @@ export default function Home() {
         },
         body: JSON.stringify(data)
       });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Failed to save measurement");
+      }
+
       const resData = await res.json();
 
-      setData((prev) => [...prev, { ...resData.data }]);
+      setData((prev) => [...prev, resData.data]);
 
       toast.success("Data saved successfully", {
         richColors: true
@@ -106,7 +110,10 @@ export default function Home() {
 
       setShouldShowForm(false);
     } catch (err) {
-      console.log(err);
+      const errorMessage =
+        err instanceof Error ? err.message : "Error saving data";
+      console.error("Error:", err);
+      toast.error(errorMessage, { richColors: true });
     } finally {
       setLoading(false);
     }
@@ -126,12 +133,20 @@ export default function Home() {
         const res = await fetch(`${paths.HEATH_API}?${params.toString()}`, {
           method: "GET"
         });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.message || "Failed to save measurement");
+        }
+
         const resData = await res.json();
 
         setData(resData.data);
       } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Error saving data";
         console.log(err);
-        toast.error("Error getting data", { richColors: true });
+        toast.error(errorMessage || "Error getting data", { richColors: true });
       } finally {
         setLoading(false);
       }
@@ -149,12 +164,30 @@ export default function Home() {
         actionSlot={
           <div className="flex items-center gap-3">
             <DateRangePicker value={dateRange} onChange={setDateRange} />
-            <Button onClick={() => setShouldShowForm(true)}>
+            <Button
+              onClick={() => setShouldShowForm(true)}
+              disabled={btnDisabled}
+            >
               <PlusIcon /> Measurement
             </Button>
           </div>
         }
       ></PageTitle>
+
+      {(!user?.gender || !user.height) && (
+        <Alert variant={"info"} className="my-4">
+          <AlertCircleIcon />
+          <AlertTitle>Profile Incomplete</AlertTitle>
+          <AlertDescription>
+            <p>
+              Your profile is incomplete. Please complete your profile{" "}
+              <Link href={"/profile"} className="underline inline">
+                here
+              </Link>
+            </p>
+          </AlertDescription>
+        </Alert>
+      )}
 
       <Dialog open={shouldShowForm} onOpenChange={setShouldShowForm}>
         <DialogContent className="max-w-2xl">

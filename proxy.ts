@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyJwtToken } from "@/lib/jwt";
 
-const PUBLIC_PATHS = ["/", "/api/auth/login", "/api/auth/register"];
+const PUBLIC_PATHS = [
+  "/",
+  "/api/auth/login",
+  "/api/auth/register",
+  "/api/auth/google",
+  "/api/auth/google/callback"
+];
 const AUTH_PATHS = ["/", "/api/auth/login", "/api/auth/register"];
 
 export async function proxy(req: NextRequest) {
@@ -43,5 +49,7 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"]
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|google.svg|.*\\.svg|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.gif|.*\\.webp).*)"
+  ]
 };

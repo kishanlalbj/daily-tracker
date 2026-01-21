@@ -15,7 +15,7 @@ export const POST = async (req: NextRequest) => {
       }
     });
 
-    if (!user) {
+    if (!user || !user.password) {
       return NextResponse.json(
         { message: "Password or email is incorrect" },
         { status: 404 }
@@ -44,6 +44,7 @@ export const POST = async (req: NextRequest) => {
     response.cookies.set("token", token, {
       path: "/",
       httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 60 * 60 * 24 * 7
     });

@@ -1,3 +1,5 @@
+import { type TrendDirection } from "@/lib/trend-utils";
+
 export enum GENDER {
   MALE = "male",
   FEMALE = "female",
@@ -13,5 +15,101 @@ export interface User {
   height: number;
   password: string;
   gender: GENDER;
+  avatar: string;
   createdAt?: Date;
 }
+
+export interface Expense {
+  id?: string | number;
+  date: string;
+  expense_title: string;
+  amount: number;
+  categoryId?: number;
+  category: {
+    title: string;
+  };
+}
+
+export interface Measurement {
+  id?: string | number;
+  created_at: string;
+  weight: number;
+  bmi: number;
+  bodyFat: number;
+  bodyFatWeight?: number;
+}
+
+export type DashboardData = {
+  health: {
+    latest: {
+      weight: number;
+      bodyFat: number;
+      bmi: number;
+    };
+    trends: Array<{ created_at: string; weight: number }>;
+    trendDirections: {
+      weight: {
+        direction: TrendDirection;
+        change: number;
+      };
+      bodyFat: {
+        direction: TrendDirection;
+        change: number;
+      };
+      bmi: {
+        direction: TrendDirection;
+        change: number;
+      };
+    };
+    bodyComposition: {
+      message: string;
+      color: string;
+    };
+    idealWeight: number | null;
+    weightGoal: {
+      message: string;
+      difference: number;
+      color: string;
+    } | null;
+  };
+  expenses: {
+    summary: {
+      total: number;
+      transactionCount: number;
+      average: number;
+      changeFromPreviousPeriod: number;
+    };
+    trends: Array<{ created_at: string; total: number }>;
+    trendDirections: {
+      total: {
+        direction: TrendDirection;
+        change: number;
+      };
+    };
+    topSpendingCategory: {
+      categoryId: number;
+      category: string;
+      total: number;
+      transactionCount: number;
+      percentage: number;
+    } | null;
+    categoryBreakdown: Array<{
+      categoryId: number;
+      category: string;
+      total: number;
+      transactionCount: number;
+      percentage: number;
+    }>;
+    recentTransactions: Array<{
+      id: number;
+      date: Date;
+      expense_title: string;
+      amount: number;
+      categoryId: number;
+      category: {
+        id: number;
+        title: string;
+      };
+    }>;
+  };
+};

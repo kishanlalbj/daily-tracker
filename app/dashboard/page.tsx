@@ -6,7 +6,6 @@ import { DateRangePicker } from "@/components/date-range-picker";
 import { DateRange as TDateRange } from "react-day-picker";
 import { ChartLineLinear } from "@/components/charts/chart-line-linear";
 import StatsCard from "@/components/stats-card";
-import { type TrendDirection } from "@/lib/trend-utils";
 import { ChartBarDefault } from "@/components/charts/bar-chart";
 import { ChartPieDonut } from "@/components/charts/pie-chart";
 import {
@@ -16,83 +15,16 @@ import {
 } from "@/lib/dashboard-helpers";
 import PageTitle from "@/components/page-title";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TrendingDownIcon, TrendingUpIcon } from "lucide-react";
+import {
+  AlertCircleIcon,
+  TrendingDownIcon,
+  TrendingUpIcon
+} from "lucide-react";
 import Loading from "./loading";
-
-type DashboardData = {
-  health: {
-    latest: {
-      weight: number;
-      bodyFat: number;
-      bmi: number;
-    };
-    trends: Array<{ created_at: string; weight: number }>;
-    trendDirections: {
-      weight: {
-        direction: TrendDirection;
-        change: number;
-      };
-      bodyFat: {
-        direction: TrendDirection;
-        change: number;
-      };
-      bmi: {
-        direction: TrendDirection;
-        change: number;
-      };
-    };
-    bodyComposition: {
-      message: string;
-      color: string;
-    };
-    idealWeight: number | null;
-    weightGoal: {
-      message: string;
-      difference: number;
-      color: string;
-    } | null;
-  };
-  expenses: {
-    summary: {
-      total: number;
-      transactionCount: number;
-      average: number;
-      changeFromPreviousPeriod: number;
-    };
-    trends: Array<{ created_at: string; total: number }>;
-    trendDirections: {
-      total: {
-        direction: TrendDirection;
-        change: number;
-      };
-    };
-    topSpendingCategory: {
-      categoryId: number;
-      category: string;
-      total: number;
-      transactionCount: number;
-      percentage: number;
-    } | null;
-    categoryBreakdown: Array<{
-      categoryId: number;
-      category: string;
-      total: number;
-      transactionCount: number;
-      percentage: number;
-    }>;
-    recentTransactions: Array<{
-      id: number;
-      date: Date;
-      expense_title: string;
-      amount: number;
-      categoryId: number;
-      category: {
-        id: number;
-        title: string;
-      };
-    }>;
-  };
-};
+import { toast } from "sonner";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import Link from "next/link";
+import { DashboardData } from "@/types";
 
 const DashboardPage = () => {
   const user = useUser();
@@ -119,11 +51,19 @@ const DashboardPage = () => {
 
         const res = await fetch(`${paths.DASHBOARD_API}?${params.toString()}`);
 
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.message || "Failed to fetch dashboard");
+        }
+
         const result = await res.json();
 
         setData(result?.data);
-      } catch (error) {
-        console.error(error);
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Error fetching data";
+        console.error("Error:", err);
+        toast.error(errorMessage, { richColors: true });
       } finally {
         setLoading(false);
       }
@@ -155,6 +95,21 @@ const DashboardPage = () => {
           </>
         }
       ></PageTitle>
+
+      {(!user?.gender || !user.height) && (
+        <Alert variant={"warning"} className="my-4">
+          <AlertCircleIcon />
+          <AlertTitle>Profile Incomplete</AlertTitle>
+          <AlertDescription>
+            <p>
+              Your profile is incomplete. Please complete your profile{" "}
+              <Link href={"/profile"} className="underline inline">
+                here
+              </Link>
+            </p>
+          </AlertDescription>
+        </Alert>
+      )}
 
       <Tabs defaultValue="expenses">
         <TabsList>
