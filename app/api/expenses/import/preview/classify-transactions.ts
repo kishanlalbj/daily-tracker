@@ -1,8 +1,4 @@
-import OpenAI from "openai";
-
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+import openAiClient from "@/lib/openai/client";
 
 export const classifyTransactions = async (
   categories: unknown,
@@ -37,7 +33,7 @@ export const classifyTransactions = async (
     `;
 
   try {
-    const response = await client.chat.completions.create({
+    const response = await openAiClient.chat.completions.create({
       model: "gpt-4.1-mini",
       messages: [{ role: "user", content: prompt }],
       temperature: 0
