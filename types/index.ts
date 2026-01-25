@@ -2,21 +2,20 @@ import { type TrendDirection } from "@/lib/trend-utils";
 
 export enum GENDER {
   MALE = "male",
-  FEMALE = "female",
-  OTHER = "other",
-  UNKNOWN = "unknown"
+  FEMALE = "female"
 }
 
 export interface User {
-  id?: string & number;
+  id?: string | number;
   first_name: string;
   last_name: string;
   email: string;
-  height: number;
-  password: string;
-  gender: GENDER;
-  avatar: string;
-  createdAt?: Date;
+  height?: number;
+  password?: string;
+  gender?: GENDER;
+  avatar?: string;
+  created_at?: Date;
+  last_login_at?: Date;
 }
 
 export interface Expense {
