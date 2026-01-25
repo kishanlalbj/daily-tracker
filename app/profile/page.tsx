@@ -377,6 +377,9 @@ const ProfilePage = () => {
                           placeholder="Height"
                           {...field}
                           value={field.value}
+                          onChange={(e) =>
+                            field.onChange(e.target.valueAsNumber)
+                          }
                         />
                         <FormMessage />
                       </div>
