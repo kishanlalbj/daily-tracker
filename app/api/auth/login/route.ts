@@ -35,6 +35,16 @@ export const POST = async (req: NextRequest) => {
 
     const verified = verifyJwtToken(token);
 
+    // upate last login
+    await prisma.user.update({
+      where: {
+        id: user.id
+      },
+      data: {
+        last_login_at: new Date()
+      }
+    });
+
     const response = NextResponse.json({
       message: "Login successfull",
       data: verified,

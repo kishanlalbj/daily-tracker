@@ -36,13 +36,14 @@ import { Pencil } from "lucide-react";
 import PageTitle from "@/components/page-title";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
+import { format } from "date-fns";
 
 const ProfileSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   email: z.email("Invalid email address"),
   gender: z.enum(["male", "female"], "Select either male or female"),
-  height: z.number().min(30).max(250).optional()
+  height: z.number().min(30).max(250)
 });
 
 type ProfileData = z.infer<typeof ProfileSchema>;
@@ -60,7 +61,7 @@ const ProfilePage = () => {
       lastName: user?.last_name || "",
       email: user?.email || "",
       gender: user?.gender as "male" | "female",
-      height: user?.height ? Number(user.height) : undefined
+      height: user?.height
     }
   });
 
@@ -195,11 +196,26 @@ const ProfilePage = () => {
                 <p className="mt-2 text-base">{user?.last_name || "-"}</p>
               </div>
             </div>
-            <div className="pt-2 border-t">
-              <Label className="text-sm font-medium text-muted-foreground">
-                Email
-              </Label>
-              <p className="mt-2 text-base">{user?.email || "-"}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 ">
+              <div className="pt-2 border-t">
+                <Label className="text-sm font-medium text-muted-foreground">
+                  Email
+                </Label>
+                <p className="mt-2 text-base">{user?.email || "-"}</p>
+              </div>
+              <div className="pt-2 border-t">
+                <Label className="text-sm font-medium text-muted-foreground">
+                  Last Login
+                </Label>
+                <p className="mt-2 text-base">
+                  {(user?.last_login_at &&
+                    format(
+                      new Date(user?.last_login_at),
+                      "dd MMM yyyy, hh:mm a"
+                    )) ||
+                    "-"}
+                </p>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -360,14 +376,7 @@ const ProfilePage = () => {
                           type="number"
                           placeholder="Height"
                           {...field}
-                          value={field.value || ""}
-                          onChange={(e) =>
-                            field.onChange(
-                              e.target.value
-                                ? Number(e.target.value)
-                                : undefined
-                            )
-                          }
+                          value={field.value}
                         />
                         <FormMessage />
                       </div>

@@ -1,28 +1,38 @@
 import { cookies } from "next/headers";
 import prisma from "@/lib/prisma";
-import { verifyJwtToken } from "@/lib/jwt";
+import { requiresAuth } from "@/lib/jwt";
+import { User } from "@/types";
 
-export const getCurrentUser = async () => {
-  const cookieStore = await cookies();
+export const getCurrentUser = async (): Promise<User | null> => {
+  try {
+    const cookieStore = await cookies();
 
-  const token = cookieStore.get("token")?.value;
+    const token = cookieStore.get("token")?.value;
 
-  if (!token) return null;
+    if (!token) return null;
 
-  const { userId } = await verifyJwtToken(token);
+    const { userId } = await requiresAuth(token);
 
-  const userFromDb = await prisma.user.findUnique({
-    where: {
-      id: userId
-    }
-  });
+    const userFromDb = await prisma.user.findUnique({
+      where: {
+        id: userId
+      }
+    });
 
-  if (!userFromDb) return null;
+    if (!userFromDb) return null;
 
-  const { password, ...user } = userFromDb;
+    const { password, ...user } = userFromDb;
 
-  return {
-    ...user,
-    height: user.height ? Number(user.height) : null
-  };
+    console.log({
+      ...user,
+      height: user.height
+    });
+
+    return {
+      ...user,
+      height: Number(user.height)
+    } as User;
+  } catch (err) {
+    return null;
+  }
 };

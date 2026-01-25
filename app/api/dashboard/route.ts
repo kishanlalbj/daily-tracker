@@ -8,10 +8,22 @@ import {
   calculateIdealWeight,
   calculateWeightGoal
 } from "@/app/api/dashboard/helpers";
+import { requiresAuth } from "@/lib/jwt";
+import { cookies } from "next/headers";
 
 export async function GET(req: NextRequest) {
   try {
     const userId = Number(req.headers.get("x-user-id"));
+    const cookieStore = await cookies();
+    const token = await cookieStore.get("token")?.value;
+
+    if (!token)
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    const authenticated = await requiresAuth(token);
+
+    if (!authenticated)
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+
     const { searchParams } = new URL(req.url);
     const { fromDate, toDate } = getDateRange(searchParams);
 

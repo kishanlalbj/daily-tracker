@@ -1,6 +1,5 @@
 import bcrypt from "bcryptjs";
-import jwt, { JsonWebTokenError } from "jsonwebtoken";
-import { jwtVerify } from "jose";
+import { jwtVerify, SignJWT } from "jose";
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 const secret = new TextEncoder().encode(JWT_SECRET);
@@ -13,23 +12,28 @@ export const verifyPassword = async (password: string, hash: string) => {
   return await bcrypt.compare(password, hash);
 };
 
-export const generateJwtToken = async (
-  payload: Record<string, unknown> | string
-) => {
-  try {
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
-
-    return token;
-  } catch (err) {
-    if (err instanceof JsonWebTokenError) {
-      throw err;
-    } else throw new Error("Error creating JWT token");
-  }
+export const generateJwtToken = async (payload: Record<string, unknown>) => {
+  return new SignJWT(payload)
+    .setProtectedHeader({ alg: "HS256" })
+    .setExpirationTime("1d")
+    .setIssuer("daily-tracker")
+    .setIssuedAt()
+    .setAudience("daily-tracker-web")
+    .sign(secret);
 };
 
 export const verifyJwtToken = async (token: string) => {
-  //   return jwt.verify(token, JWT_SECRET) as { userId: number };
   const { payload } = await jwtVerify(token, secret);
+
+  return payload as { userId: number };
+};
+
+export const requiresAuth = async (token: string) => {
+  const { payload } = await jwtVerify(token, secret, {
+    issuer: "daily-tracker",
+    audience: "daily-tracker-web",
+    algorithms: ["HS256"]
+  });
 
   return payload as { userId: number };
 };

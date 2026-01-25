@@ -1,26 +1,16 @@
 "use client";
 
+import { User } from "@/types";
 import { createContext, useContext, ReactNode } from "react";
 
-type User = {
-  id: number;
-  first_name: string;
-  last_name: string;
-  email: string;
-  gender: "male" | "female" | null;
-  height: number | null;
-  avatar?: string | null;
-  created_at: Date;
-} | null;
-
-const UserContext = createContext<User>(null);
+const UserContext = createContext<User | null>(null);
 
 export function UserProvider({
   children,
   user
 }: {
   children: ReactNode;
-  user: User;
+  user: User | null;
 }) {
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
 }

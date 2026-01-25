@@ -40,17 +40,14 @@ const MeasurementForm = ({ onFormSubmit, loading }: MeasurementFormProps) => {
   return (
     <>
       <Form {...form}>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="grid grid-cols-1 md:grid-cols-2 gap-4"
-        >
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <FormField
             name="weight"
             {...control}
             render={({ field }) => {
               return (
-                <div className="space-y-2">
-                  <Label>Weight</Label>
+                <div className="space-y-2 w-full">
+                  <Label>Weight (Kg)</Label>
                   <Input placeholder="weight" type="number" {...field}></Input>
                   <FormMessage></FormMessage>
                 </div>
@@ -64,7 +61,7 @@ const MeasurementForm = ({ onFormSubmit, loading }: MeasurementFormProps) => {
             render={({ field }) => {
               return (
                 <div className="space-y-2">
-                  <Label>Waist</Label>
+                  <Label>Waist (cm)</Label>
                   <Input placeholder="Waist" type="number" {...field}></Input>
                   <FormMessage></FormMessage>
                 </div>
@@ -78,7 +75,7 @@ const MeasurementForm = ({ onFormSubmit, loading }: MeasurementFormProps) => {
             render={({ field }) => {
               return (
                 <div className="space-y-2">
-                  <Label>Neck</Label>
+                  <Label>Neck (cm)</Label>
                   <Input placeholder="Neck" type="number" {...field}></Input>
                   <FormMessage></FormMessage>
                 </div>
