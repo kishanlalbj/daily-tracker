@@ -28,17 +28,18 @@ export const verifyJwtToken = async (token: string) => {
   return payload as { userId: number };
 };
 
-export const requiresAuth = async (token: string) => {
+export const requiresAuth = async (
+  token: string
+): Promise<{ userId: number | null }> => {
   try {
     const { payload } = await jwtVerify(token, secret, {
       issuer: "daily-tracker",
       audience: "daily-tracker-web",
       algorithms: ["HS256"]
     });
-    return payload as { userId: number };
-  } catch (error) {
-    if (error === errors.JWTClaimValidationFailed) {
-      return null;
-    }
+
+    return payload as { userId: number | null };
+  } catch {
+    return { userId: null };
   }
 };

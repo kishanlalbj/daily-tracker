@@ -13,6 +13,8 @@ export const getCurrentUser = async (): Promise<User | null> => {
 
     const { userId } = await requiresAuth(token);
 
+    if (!userId) return null;
+
     const userFromDb = await prisma.user.findUnique({
       where: {
         id: userId
@@ -22,11 +24,6 @@ export const getCurrentUser = async (): Promise<User | null> => {
     if (!userFromDb) return null;
 
     const { password, ...user } = userFromDb;
-
-    console.log({
-      ...user,
-      height: user.height
-    });
 
     return {
       ...user,
