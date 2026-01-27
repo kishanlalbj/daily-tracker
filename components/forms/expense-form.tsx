@@ -84,7 +84,9 @@ const ExpenseForm = ({
     const getCategoryOptions = async () => {
       try {
         setIsCategoriesLoading(true);
-        const res = await fetch(`${paths.CATEGORY_API}`);
+        const res = await fetch(`${paths.CATEGORY_API}`, {
+          next: { revalidate: 60 * 60 }
+        });
 
         const resData = await res.json();
 
