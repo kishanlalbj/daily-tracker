@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { jwtVerify, SignJWT } from "jose";
+import { jwtVerify, SignJWT, errors } from "jose";
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 const secret = new TextEncoder().encode(JWT_SECRET);
@@ -28,12 +28,18 @@ export const verifyJwtToken = async (token: string) => {
   return payload as { userId: number };
 };
 
-export const requiresAuth = async (token: string) => {
-  const { payload } = await jwtVerify(token, secret, {
-    issuer: "daily-tracker",
-    audience: "daily-tracker-web",
-    algorithms: ["HS256"]
-  });
+export const requiresAuth = async (
+  token: string
+): Promise<{ userId: number | null }> => {
+  try {
+    const { payload } = await jwtVerify(token, secret, {
+      issuer: "daily-tracker",
+      audience: "daily-tracker-web",
+      algorithms: ["HS256"]
+    });
 
-  return payload as { userId: number };
+    return payload as { userId: number | null };
+  } catch {
+    return { userId: null };
+  }
 };
