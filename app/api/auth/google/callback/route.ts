@@ -1,5 +1,6 @@
 import { generateJwtToken } from "@/lib/jwt";
 import prisma from "@/lib/prisma";
+import { findUserByEmail } from "@/services/users";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -45,11 +46,7 @@ export async function GET(req: NextRequest) {
 
     const user = await userResponse.json();
 
-    console.log({ user });
-
-    let dbUser = await prisma.user.findFirst({
-      where: { email: user.email, is_deleted: false }
-    });
+    let dbUser = await findUserByEmail(user.email);
 
     if (dbUser && !dbUser.avatar) {
       await prisma.user.update({

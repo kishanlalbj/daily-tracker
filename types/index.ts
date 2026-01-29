@@ -1,12 +1,17 @@
 import { type TrendDirection } from "@/lib/trend-utils";
 
+export enum Provider {
+  LOCAL = "local",
+  GOOGLE = "google"
+}
+
 export enum GENDER {
   MALE = "male",
   FEMALE = "female"
 }
 
 export interface User {
-  id?: string | number;
+  id?: number;
   first_name: string;
   last_name: string;
   email: string;
@@ -16,14 +21,16 @@ export interface User {
   avatar?: string;
   created_at?: Date;
   last_login_at?: Date;
+  provider?: Provider;
 }
 
 export interface Expense {
-  id?: string | number;
+  id?: number;
   date: string;
   expense_title: string;
   amount: number;
   categoryId?: number;
+  userId?: number;
   category: {
     title: string;
   };

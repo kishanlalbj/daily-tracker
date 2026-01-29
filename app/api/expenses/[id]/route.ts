@@ -1,4 +1,8 @@
-import prisma from "@/lib/prisma";
+import {
+  deleteExpense,
+  getExpenseById,
+  updateExpense
+} from "@/services/expenses";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function DELETE(
@@ -15,12 +19,7 @@ export async function DELETE(
         { status: 400 }
       );
     }
-    const expense = await prisma.expenseTracker.findFirst({
-      where: {
-        id: Number(id),
-        userId: Number(userId)
-      }
-    });
+    const expense = await getExpenseById(Number(userId), Number(id));
 
     if (!expense) {
       return NextResponse.json(
@@ -29,11 +28,7 @@ export async function DELETE(
       );
     }
 
-    await prisma.expenseTracker.delete({
-      where: {
-        id: Number(id)
-      }
-    });
+    await deleteExpense(Number(userId), Number(id));
 
     return NextResponse.json(
       { message: "Expense deleted successfully" },
@@ -65,12 +60,7 @@ export async function PUT(
 
     const { date, expense_title, amount, category } = await req.json();
 
-    const expense = await prisma.expenseTracker.findFirst({
-      where: {
-        id: Number(id),
-        userId: Number(userId)
-      }
-    });
+    const expense = await getExpenseById(Number(userId), Number(id));
 
     if (!expense) {
       return NextResponse.json(
@@ -79,23 +69,12 @@ export async function PUT(
       );
     }
 
-    const updatedExpense = await prisma.expenseTracker.update({
-      where: {
-        id: Number(id)
-      },
-      data: {
-        date,
-        expense_title,
-        categoryId: category,
-        amount
-      },
-      include: {
-        category: {
-          select: {
-            title: true
-          }
-        }
-      }
+    const updatedExpense = await updateExpense(Number(userId), Number(id), {
+      date: new Date(date),
+      expense_title,
+      amount,
+      categoryId: category.id,
+      userId: Number(userId)
     });
 
     return NextResponse.json({ data: updatedExpense }, { status: 200 });

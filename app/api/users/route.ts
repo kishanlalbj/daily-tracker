@@ -1,16 +1,12 @@
 import prisma from "@/lib/prisma";
+import { findUserById, updateUser } from "@/services/users";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
     const userId = req.headers.get("x-user-id");
 
-    const user = await prisma.user.findUnique({
-      where: {
-        id: Number(userId),
-        is_deleted: false
-      }
-    });
+    const user = await findUserById(Number(userId));
 
     return NextResponse.json({ data: user }, { status: 200 });
   } catch (error) {
@@ -47,17 +43,12 @@ export async function PUT(req: NextRequest) {
       }
     }
 
-    const updatedUser = await prisma.user.update({
-      where: {
-        id: Number(userId)
-      },
-      data: {
-        first_name: firstName,
-        last_name: lastName,
-        email,
-        gender,
-        height
-      }
+    const updatedUser = await updateUser(Number(userId), {
+      first_name: firstName,
+      last_name: lastName,
+      email,
+      gender,
+      height
     });
 
     // Convert Decimal to number for client

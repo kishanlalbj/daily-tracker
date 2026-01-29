@@ -1,5 +1,5 @@
 import { generateJwtToken, verifyJwtToken, verifyPassword } from "@/lib/jwt";
-import prisma from "@/lib/prisma";
+import { findUserByEmail, updateUser } from "@/services/users";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest) => {
@@ -8,12 +8,7 @@ export const POST = async (req: NextRequest) => {
 
     const { email, password } = body as { email: string; password: string };
 
-    const user = await prisma.user.findFirst({
-      where: {
-        email,
-        is_deleted: false
-      }
-    });
+    const user = await findUserByEmail(email);
 
     if (!user || !user.password) {
       return NextResponse.json(
@@ -36,14 +31,7 @@ export const POST = async (req: NextRequest) => {
     const verified = verifyJwtToken(token);
 
     // upate last login
-    await prisma.user.update({
-      where: {
-        id: user.id
-      },
-      data: {
-        last_login_at: new Date()
-      }
-    });
+    await updateUser(user.id!, { last_login_at: new Date() });
 
     const response = NextResponse.json({
       message: "Login successfull",
