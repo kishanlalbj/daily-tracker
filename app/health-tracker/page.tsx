@@ -23,7 +23,7 @@ import { DateRangePicker } from "@/components/date-range-picker";
 import { useUser } from "@/contexts/UserContext";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Link from "next/link";
-import { Measurement } from "@/types";
+import type { Measurement } from "@/types";
 
 export default function Home() {
   const user = useUser();

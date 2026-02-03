@@ -1,4 +1,4 @@
-import { type TrendDirection } from "@/lib/trend-utils";
+import type { TrendDirection } from "@/lib/trend-utils";
 
 export enum Provider {
   LOCAL = "local",

@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { GENDER, Provider, User } from "@/types";
+import type { GENDER, Provider, User } from "@/types";
 
 type UserFormInput = {
   first_name: string;

@@ -6,7 +6,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { getCurrentUser } from "@/lib/helpers";
 import { UserProvider } from "@/contexts/UserContext";
-import { User } from "@/types";
+import type { User } from "@/types";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

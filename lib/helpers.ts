@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import prisma from "@/lib/prisma";
 import { requiresAuth } from "@/lib/jwt";
-import { User } from "@/types";
+import type { User } from "@/types";
 
 export const getCurrentUser = async (): Promise<User | null> => {
   try {

@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { jwtVerify, SignJWT, errors } from "jose";
+import { jwtVerify, SignJWT } from "jose";
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 const secret = new TextEncoder().encode(JWT_SECRET);

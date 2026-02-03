@@ -1,4 +1,3 @@
-export const runtime = "nodejs";
 import { NextRequest, NextResponse } from "next/server";
 import { calculateAverage, calculateBMI, calculateBodyFat } from "./formulas";
 import prisma from "@/lib/prisma";
