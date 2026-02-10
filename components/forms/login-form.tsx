@@ -18,7 +18,7 @@ import { Spinner } from "@/components/ui/spinner";
 
 const LoginSchema = z.object({
   email: z.email().min(1, "Email is required"),
-  password: z.string()
+  password: z.string().min(1, "Password is required")
 });
 
 export type LoginData = z.infer<typeof LoginSchema>;

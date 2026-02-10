@@ -1,4 +1,3 @@
-export const runtime = "nodejs";
 import { NextRequest, NextResponse } from "next/server";
 import { calculateAverage, calculateBMI, calculateBodyFat } from "./formulas";
 import prisma from "@/lib/prisma";
@@ -16,17 +15,10 @@ export async function POST(req: NextRequest) {
       select: { height: true, gender: true }
     });
 
-    if (!user?.height) {
-      return NextResponse.json(
-        { message: "User height not set. Please update your profile." },
-        { status: 400 }
-      );
-    }
-
-    if (!user.gender) {
+    if (!user?.height || !user.gender) {
       return NextResponse.json(
         {
-          message: "Gender not set. Please update your profile"
+          message: "User height or gender not set. Please update your profile."
         },
         { status: 400 }
       );

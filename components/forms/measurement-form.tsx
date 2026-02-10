@@ -40,7 +40,10 @@ const MeasurementForm = ({ onFormSubmit, loading }: MeasurementFormProps) => {
   return (
     <>
       <Form {...form}>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col items-center justify-stretch space-y-4"
+        >
           <FormField
             name="weight"
             {...control}
@@ -60,7 +63,7 @@ const MeasurementForm = ({ onFormSubmit, loading }: MeasurementFormProps) => {
             {...control}
             render={({ field }) => {
               return (
-                <div className="space-y-2">
+                <div className="space-y-2 w-full">
                   <Label>Waist (cm)</Label>
                   <Input placeholder="Waist" type="number" {...field}></Input>
                   <FormMessage></FormMessage>
@@ -74,7 +77,7 @@ const MeasurementForm = ({ onFormSubmit, loading }: MeasurementFormProps) => {
             {...control}
             render={({ field }) => {
               return (
-                <div className="space-y-2">
+                <div className="space-y-2 w-full">
                   <Label>Neck (cm)</Label>
                   <Input placeholder="Neck" type="number" {...field}></Input>
                   <FormMessage></FormMessage>
@@ -83,16 +86,14 @@ const MeasurementForm = ({ onFormSubmit, loading }: MeasurementFormProps) => {
             }}
           ></FormField>
 
-          <div className="md:col-span-2">
-            <Button
-              type="submit"
-              disabled={loading}
-              variant={loading ? "outline" : "default"}
-              className="w-full md:w-auto"
-            >
-              Submit {loading ? <Spinner /> : ""}
-            </Button>
-          </div>
+          <Button
+            type="submit"
+            disabled={loading}
+            variant={loading ? "outline" : "default"}
+            className="w-full"
+          >
+            Submit {loading ? <Spinner /> : ""}
+          </Button>
         </form>
       </Form>
     </>

@@ -24,7 +24,7 @@ import Loading from "./loading";
 import { toast } from "sonner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Link from "next/link";
-import { DashboardData } from "@/types";
+import type { DashboardData } from "@/types";
 
 const DashboardPage = () => {
   const user = useUser();
