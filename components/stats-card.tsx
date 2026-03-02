@@ -57,7 +57,7 @@ const StatsCard = ({
           </p>
           {Icon && (
             <div className="h-8 w-8 shrink-0 rounded-md bg-muted flex items-center justify-center">
-              <Icon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+              <Icon className="h-4 w-4 text-primary" aria-hidden="true" />
             </div>
           )}
         </div>

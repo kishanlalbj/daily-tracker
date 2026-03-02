@@ -1,9 +1,10 @@
 "use client";
 import { paths } from "@/constants";
 import { useUser } from "@/contexts/UserContext";
+import { useDateRange } from "@/contexts/DateRangeContext";
 import { useEffect, useState } from "react";
 import { DateRangePicker } from "@/components/date-range-picker";
-import { DateRange as TDateRange } from "react-day-picker";
+import { DateRangePresets } from "@/components/date-range-presets";
 import { ChartLineLinear } from "@/components/charts/chart-line-linear";
 import StatsCard from "@/components/stats-card";
 import { ChartBarDefault } from "@/components/charts/bar-chart";
@@ -57,10 +58,7 @@ const DashboardPage = () => {
   const [data, setData] = useState<DashboardData>();
   const [loading, setLoading] = useState<boolean>(true);
 
-  const [dateRange, setDateRange] = useState<TDateRange | undefined>({
-    from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-    to: new Date()
-  });
+  const { dateRange, setDateRange } = useDateRange();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -130,6 +128,8 @@ const DashboardPage = () => {
           </AlertDescription>
         </Alert>
       )}
+
+      <DateRangePresets value={dateRange} onChange={setDateRange} className="my-4" />
 
       <Tabs defaultValue="expenses">
         <TabsList>

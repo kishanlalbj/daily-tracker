@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, ColumnFiltersState } from "@tanstack/react-table";
 import { Edit2Icon, PlusIcon, TrashIcon, UploadIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import ExpenseForm from "@/components/forms/expense-form";
@@ -31,7 +31,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Spinner } from "@/components/ui/spinner";
 import { DateRangePicker } from "@/components/date-range-picker";
+import { DateRangePresets } from "@/components/date-range-presets";
 import type { DateRange as TDateRange } from "react-day-picker";
+import { useDateRange } from "@/contexts/DateRangeContext";
 import { Expense } from "@/types";
 import Link from "next/link";
 
@@ -93,12 +95,20 @@ const ExpenseActions = ({
 };
 
 const ExpenseTrackerPage = () => {
+  const { dateRange, setDateRange } = useDateRange();
   const [data, setData] = useState<Expense[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [dateRange, setDateRange] = useState<TDateRange | undefined>({
-    from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-    to: new Date()
-  });
+  const [categoryFilter, setCategoryFilter] = useState<string>("");
+
+  const uniqueCategories = useMemo(
+    () => [...new Set(data.map((e) => e.category?.title).filter(Boolean))].sort(),
+    [data]
+  );
+
+  const columnFilters = useMemo<ColumnFiltersState>(
+    () => (categoryFilter ? [{ id: "category", value: categoryFilter }] : []),
+    [categoryFilter]
+  );
 
   const [loaders, setLoaders] = useState({
     delete: false
@@ -268,6 +278,10 @@ const ExpenseTrackerPage = () => {
       {
         accessorKey: "category",
         header: "Category",
+        filterFn: (row, columnId, filterValue: string) => {
+          const cat = row.getValue(columnId) as { title: string };
+          return cat?.title === filterValue;
+        },
         cell: ({ getValue }) => {
           const cat = getValue() as { title: string };
           return <Badge variant="secondary">{cat.title}</Badge>;
@@ -351,7 +365,6 @@ const ExpenseTrackerPage = () => {
 
   return (
     <div className="px-4 py-6 md:px-6 md:py-8 max-w-6xl mx-auto">
-
       <PageTitle
         title="Expense Tracker"
         subtitle="Track and manage your daily expenses"
@@ -368,12 +381,44 @@ const ExpenseTrackerPage = () => {
         }
       ></PageTitle>
 
+      <DateRangePresets
+        value={dateRange}
+        onChange={setDateRange}
+        className="my-4"
+      />
+
       <div>
         <DataTable
           columns={columns}
           data={data}
           title="Expenses"
           loading={loading}
+          columnFilters={columnFilters}
+          toolbar={
+            uniqueCategories.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5">
+                <Button
+                  variant={!categoryFilter ? "secondary" : "ghost"}
+                  size="sm"
+                  className={!categoryFilter ? "border border-foreground/30" : ""}
+                  onClick={() => setCategoryFilter("")}
+                >
+                  All
+                </Button>
+                {uniqueCategories.map((cat) => (
+                  <Button
+                    key={cat}
+                    variant={categoryFilter === cat ? "secondary" : "ghost"}
+                    size="sm"
+                    className={categoryFilter === cat ? "border border-foreground/30" : ""}
+                    onClick={() => setCategoryFilter(categoryFilter === cat ? "" : cat)}
+                  >
+                    {cat}
+                  </Button>
+                ))}
+              </div>
+            ) : undefined
+          }
         />
       </div>
     </div>

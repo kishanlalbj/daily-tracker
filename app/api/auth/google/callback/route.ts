@@ -45,8 +45,6 @@ export async function GET(req: NextRequest) {
 
     const user = await userResponse.json();
 
-    console.log({ user });
-
     let dbUser = await prisma.user.findFirst({
       where: { email: user.email, is_deleted: false }
     });

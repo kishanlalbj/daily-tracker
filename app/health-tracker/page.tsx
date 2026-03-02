@@ -18,8 +18,9 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { DataTable } from "@/components/data-table";
 import PageTitle from "@/components/page-title";
-import type { DateRange as TDateRange } from "react-day-picker";
 import { DateRangePicker } from "@/components/date-range-picker";
+import { DateRangePresets } from "@/components/date-range-presets";
+import { useDateRange } from "@/contexts/DateRangeContext";
 import { useUser } from "@/contexts/UserContext";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Link from "next/link";
@@ -27,13 +28,10 @@ import { Measurement } from "@/types";
 
 export default function Home() {
   const user = useUser();
+  const { dateRange, setDateRange } = useDateRange();
   const [loading, setLoading] = useState(false);
   const [shouldShowForm, setShouldShowForm] = useState(false);
   const [data, setData] = useState<Measurement[]>([]);
-  const [dateRange, setDateRange] = useState<TDateRange | undefined>({
-    from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-    to: new Date()
-  });
 
   const btnDisabled = !user?.gender || !user.height;
 
@@ -156,7 +154,6 @@ export default function Home() {
 
   return (
     <div className="px-4 py-6 md:px-6 md:py-8 max-w-6xl mx-auto">
-
       <PageTitle
         title="Health Tracker"
         subtitle="Monitor your body measurements and health progress"
@@ -199,6 +196,12 @@ export default function Home() {
           <MeasurementForm onFormSubmit={handleSubmit} loading={loading} />
         </DialogContent>
       </Dialog>
+
+      <DateRangePresets
+        value={dateRange}
+        onChange={setDateRange}
+        className="my-4"
+      />
 
       <div>
         <DataTable
