@@ -36,6 +36,10 @@ export async function GET(req: NextRequest) {
     const previousFromDate = new Date(fromDate);
     previousFromDate.setDate(fromDate.getDate() - periodDays);
 
+    const investmentFilter = {
+      title: { contains: "investment", mode: "insensitive" as const }
+    };
+
     const [
       healthData,
       latestHealthMetrics,
@@ -44,7 +48,8 @@ export async function GET(req: NextRequest) {
       categoryWiseSpends,
       allExpenses,
       recentTransactions,
-      previousPeriodExpense
+      previousPeriodExpense,
+      investmentExpenses
     ] = await Promise.all([
       // Health data
       prisma.healthTracker.findMany({
@@ -112,8 +117,21 @@ export async function GET(req: NextRequest) {
           date: { gte: previousFromDate, lt: fromDate }
         },
         _sum: { amount: true }
+      }),
+
+      // Total investments (DB-level relation filter — reliable regardless of JS name matching)
+      prisma.expenseTracker.aggregate({
+        where: {
+          userId,
+          date: dateFilter,
+          user: { is_deleted: false },
+          category: investmentFilter
+        },
+        _sum: { amount: true }
       })
     ]);
+
+    console.log({ investmentExpenses });
 
     // Fetch categories
     const categoryIds = categoryWiseSpends.map((item) => item.categoryId);
@@ -138,6 +156,18 @@ export async function GET(req: NextRequest) {
             : 0
       };
     });
+
+    const totalInvestments = Number(investmentExpenses._sum.amount || 0);
+
+    const investmentCategoryIds = new Set(
+      categories
+        .filter((c) => c.title.toLowerCase().includes("investment"))
+        .map((c) => c.id)
+    );
+
+    const topSpendingCategory =
+      categoryBreakdown.find((c) => !investmentCategoryIds.has(c.categoryId)) ||
+      null;
 
     // Calculate trends
     const healthTrends = {
@@ -213,7 +243,8 @@ export async function GET(req: NextRequest) {
           trendDirections: {
             total: { direction: expenseDirection, change: expenseChange }
           },
-          topSpendingCategory: categoryBreakdown[0] || null,
+          totalInvestments,
+          topSpendingCategory,
           categoryBreakdown,
           recentTransactions
         }

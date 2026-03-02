@@ -43,12 +43,14 @@ type ExpenseCreateInput = {
   amount: number;
   categoryId: number;
   userId: number;
+  category?: {
+    title: string;
+  };
 };
 
 export const transformToExpense = (
   rows: Record<string, unknown>[],
-  userId: number,
-  categoryId: number
+  userId: number
 ): ExpenseCreateInput[] => {
   return rows
     .map((row): ExpenseCreateInput | null => {
@@ -61,11 +63,20 @@ export const transformToExpense = (
       const amount = Number(row["debit_amount"]);
       if (!Number.isFinite(amount) || amount <= 0) return null;
 
+      const categoryId = Number(row["categoryId"]);
+      if (!categoryId) return null;
+
+      const category = String(row["category"]);
+      if (!category) return null;
+
       return {
         date,
         expense_title: title,
         amount,
         categoryId,
+        category: {
+          title: category
+        },
         userId
       };
     })

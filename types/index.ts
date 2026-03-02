@@ -85,6 +85,7 @@ export type DashboardData = {
         change: number;
       };
     };
+    totalInvestments: number;
     topSpendingCategory: {
       categoryId: number;
       category: string;

@@ -9,12 +9,12 @@ import {
   DialogTrigger
 } from "@/components/ui/dialog";
 import { ColumnDef } from "@tanstack/react-table";
-import { Edit2Icon, PlusIcon, TrashIcon } from "lucide-react";
+import { Edit2Icon, PlusIcon, TrashIcon, UploadIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import ExpenseForm from "@/components/forms/expense-form";
 import { paths } from "@/constants";
 import { format } from "date-fns";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import PageTitle from "@/components/page-title";
 import { formatCurrency } from "@/lib/dashboard-helpers";
@@ -33,6 +33,64 @@ import { Spinner } from "@/components/ui/spinner";
 import { DateRangePicker } from "@/components/date-range-picker";
 import type { DateRange as TDateRange } from "react-day-picker";
 import { Expense } from "@/types";
+import Link from "next/link";
+
+interface CategoryOption {
+  label: string;
+  value: number;
+}
+
+interface ExpenseActionsProps {
+  dateRange: TDateRange | undefined;
+  onDateRangeChange: (range: TDateRange | undefined) => void;
+  onSubmit: (data: unknown) => void;
+  loading: boolean;
+  categoryOptions: CategoryOption[];
+  isCategoriesLoading: boolean;
+  onCategoryCreated: (opt: CategoryOption) => void;
+}
+
+const ExpenseActions = ({
+  dateRange,
+  onDateRangeChange,
+  onSubmit,
+  loading,
+  categoryOptions,
+  isCategoriesLoading,
+  onCategoryCreated
+}: ExpenseActionsProps) => {
+  return (
+    <div className="flex items-center gap-4">
+      <DateRangePicker value={dateRange} onChange={onDateRangeChange} />
+      <div>
+        <Link href="/expense-tracker/import">
+          <Button variant="outline">
+            <UploadIcon aria-hidden="true" />
+          </Button>
+        </Link>
+      </div>
+      <Dialog modal={true}>
+        <DialogTrigger asChild>
+          <Button variant="default">
+            <PlusIcon aria-hidden="true" /> Expense
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Expense</DialogTitle>
+          </DialogHeader>
+          <ExpenseForm
+            handleSubmit={onSubmit}
+            loading={loading}
+            categoryOptions={categoryOptions}
+            isCategoriesLoading={isCategoriesLoading}
+            onCategoryCreated={onCategoryCreated}
+          />
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
 
 const ExpenseTrackerPage = () => {
   const [data, setData] = useState<Expense[]>([]);
@@ -45,6 +103,37 @@ const ExpenseTrackerPage = () => {
   const [loaders, setLoaders] = useState({
     delete: false
   });
+
+  const [categoryOptions, setCategoryOptions] = useState<
+    { label: string; value: number }[]
+  >([]);
+  const [isCategoriesLoading, setIsCategoriesLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setIsCategoriesLoading(true);
+        const res = await fetch(paths.CATEGORY_API);
+        const resData = await res.json();
+        setCategoryOptions(
+          resData.data.map((opt: { id: number; title: string }) => ({
+            label: opt.title,
+            value: opt.id
+          }))
+        );
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsCategoriesLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  const handleCategoryCreated = (opt: CategoryOption) => {
+    setCategoryOptions((prev) => [...prev, opt]);
+  };
 
   const handleExpenseSubmit = async (data: unknown) => {
     try {
@@ -218,6 +307,9 @@ const ExpenseTrackerPage = () => {
                   }
                   loading={loading}
                   mode="edit"
+                  categoryOptions={categoryOptions}
+                  isCategoriesLoading={isCategoriesLoading}
+                  onCategoryCreated={handleCategoryCreated}
                 />
               </DialogContent>
             </Dialog>
@@ -243,7 +335,7 @@ const ExpenseTrackerPage = () => {
                       row.original.id !== undefined &&
                       handleDelete(row.original.id)
                     }
-                    className="bg-red-600 hover:bg-red-700 text-white"
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   >
                     Delete {loaders.delete ? <Spinner /> : ""}
                   </AlertDialogAction>
@@ -254,36 +346,25 @@ const ExpenseTrackerPage = () => {
         )
       }
     ],
-    [loaders.delete, loading]
+    [loaders.delete, loading, categoryOptions, isCategoriesLoading]
   );
 
   return (
-    <div className="container mx-auto px-4 py-6 md:py-8 lg:py-10 max-w-7xl">
-      <Toaster />
+    <div className="px-4 py-6 md:px-6 md:py-8 max-w-6xl mx-auto">
 
       <PageTitle
         title="Expense Tracker"
         subtitle="Track and manage your daily expenses"
         actionSlot={
-          <div className="flex items-center gap-4">
-            <DateRangePicker value={dateRange} onChange={setDateRange} />
-            <Dialog modal={true}>
-              <DialogTrigger asChild>
-                <Button variant={"default"}>
-                  <PlusIcon /> Expense
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Add Expense</DialogTitle>
-                </DialogHeader>
-                <ExpenseForm
-                  handleSubmit={handleExpenseSubmit}
-                  loading={loading}
-                />
-              </DialogContent>
-            </Dialog>
-          </div>
+          <ExpenseActions
+            dateRange={dateRange}
+            onDateRangeChange={setDateRange}
+            onSubmit={handleExpenseSubmit}
+            loading={loading}
+            categoryOptions={categoryOptions}
+            isCategoriesLoading={isCategoriesLoading}
+            onCategoryCreated={handleCategoryCreated}
+          />
         }
       ></PageTitle>
 

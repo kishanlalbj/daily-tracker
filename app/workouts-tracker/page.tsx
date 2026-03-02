@@ -2,10 +2,10 @@ import PageTitle from "@/components/page-title";
 
 const WorkoutsTrackerPage = () => {
   return (
-    <div className="container mx-auto px-4 py-6 md:py-8 lg:py-10 max-w-7xl">
+    <div className="px-4 py-6 md:px-6 md:py-8 max-w-6xl mx-auto">
       <PageTitle
         title="Workouts Tracker"
-        subtitle="Tracke and manage your workouts"
+        subtitle="Track and manage your workouts"
       ></PageTitle>
     </div>
   );

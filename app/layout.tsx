@@ -1,22 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { getCurrentUser } from "@/lib/helpers";
 import { UserProvider } from "@/contexts/UserContext";
 import { User } from "@/types";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"]
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"]
-});
+import { Toaster } from "sonner";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Daily Tracker",
@@ -31,12 +21,23 @@ export default async function RootLayout({
   const user: User | null = await getCurrentUser();
 
   return (
-    <html lang="en" className="dark" style={{ colorScheme: "dark" }}>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="antialiased">
         <UserProvider user={user}>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
             <SidebarProvider>
               {user && <AppSidebar />}
 
@@ -46,11 +47,10 @@ export default async function RootLayout({
                     <SidebarTrigger />
                   </div>
                 )}
-                <div className="container mx-auto px-0 md:px-6 lg:px-8 max-w-6xl">
-                  {children}
-                </div>
+                {children}
               </main>
             </SidebarProvider>
+            <Toaster richColors position="top-right" />
           </ThemeProvider>
         </UserProvider>
       </body>
