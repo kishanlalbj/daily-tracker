@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { paths } from "@/constants";
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
@@ -53,6 +53,7 @@ const items = [
 
 export function AppSidebar() {
   const router = useRouter();
+  const pathname = usePathname();
   const { isMobile, open, toggleSidebar } = useSidebar();
   const { resolvedTheme, setTheme } = useTheme();
 
@@ -115,9 +116,13 @@ export function AppSidebar() {
         <SidebarMenu className="gap-1">
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild className="text-sm my-1">
+              <SidebarMenuButton
+                asChild
+                isActive={pathname === item.url}
+                className="text-sm my-1 text-sidebar-foreground/70 font-medium data-[active=true]:font-semibold data-[active=true]:text-sidebar-foreground"
+              >
                 <Link href={item.url}>
-                  <item.icon scale={1.5} className="scale-110" />
+                  <item.icon scale={1.5} className="scale-120" />
                   <span>{item.title}</span>
                 </Link>
               </SidebarMenuButton>

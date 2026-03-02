@@ -6,6 +6,7 @@
 - [x] Measurement Form
 - [x] Expense Form
 - [x] Data Table
+- [x] Data Table Filters
 
 #### Roadmap
 

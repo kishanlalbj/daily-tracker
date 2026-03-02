@@ -131,8 +131,6 @@ export async function GET(req: NextRequest) {
       })
     ]);
 
-    console.log({ investmentExpenses });
-
     // Fetch categories
     const categoryIds = categoryWiseSpends.map((item) => item.categoryId);
     const categories = await prisma.category.findMany({

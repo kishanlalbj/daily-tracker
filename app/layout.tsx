@@ -4,6 +4,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { getCurrentUser } from "@/lib/helpers";
 import { UserProvider } from "@/contexts/UserContext";
+import { DateRangeProvider } from "@/contexts/DateRangeContext";
 import { User } from "@/types";
 import { Toaster } from "sonner";
 import "./globals.css";
@@ -31,12 +32,13 @@ export default async function RootLayout({
         />
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
           rel="stylesheet"
         />
       </head>
       <body className="antialiased">
         <UserProvider user={user}>
+          <DateRangeProvider>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
             <SidebarProvider>
               {user && <AppSidebar />}
@@ -52,6 +54,7 @@ export default async function RootLayout({
             </SidebarProvider>
             <Toaster richColors position="top-right" />
           </ThemeProvider>
+          </DateRangeProvider>
         </UserProvider>
       </body>
     </html>
