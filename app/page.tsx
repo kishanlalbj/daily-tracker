@@ -5,8 +5,9 @@ import type { RegistrationData } from "@/components/forms/registration-form";
 import RegistrationForm from "@/components/forms/registration-form";
 import { paths } from "@/constants";
 import { useState } from "react";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { TrendingUpIcon } from "lucide-react";
 
 const Page = () => {
   const [toggleForm, setToggleForm] = useState(false);
@@ -87,12 +88,22 @@ const Page = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <Toaster />
-      <h1 className="text-2xl font-bold mb-4">
-        Welcome to the Daily Tracker App
-      </h1>
-      <div>
+    <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12">
+      <div className="w-full max-w-sm space-y-8">
+        <div className="flex flex-col items-center gap-3 text-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md">
+            <TrendingUpIcon className="h-6 w-6" aria-hidden="true" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Daily Tracker</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {toggleForm
+                ? "Create your account to get started"
+                : "Sign in to track your expenses and health"}
+            </p>
+          </div>
+        </div>
+
         {!toggleForm ? (
           <LoginForm
             onSubmit={handleLoginSubmit}

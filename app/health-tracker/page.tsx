@@ -14,7 +14,7 @@ import {
 import { paths } from "@/constants";
 import { AlertCircleIcon, PlusIcon } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import { format } from "date-fns";
 import { DataTable } from "@/components/data-table";
 import PageTitle from "@/components/page-title";
@@ -155,8 +155,7 @@ export default function Home() {
   }, [dateRange]);
 
   return (
-    <div className="container mx-auto px-4 py-6 md:py-8 lg:py-10 max-w-7xl">
-      <Toaster />
+    <div className="px-4 py-6 md:px-6 md:py-8 max-w-6xl mx-auto">
 
       <PageTitle
         title="Health Tracker"

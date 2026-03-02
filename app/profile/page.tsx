@@ -19,6 +19,16 @@ import {
   SelectValue
 } from "@/components/ui/select";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from "@/components/ui/alert-dialog";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -30,7 +40,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormField, FormMessage } from "@/components/ui/form";
 import { Spinner } from "@/components/ui/spinner";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 import { paths } from "@/constants";
 import { Pencil } from "lucide-react";
 import PageTitle from "@/components/page-title";
@@ -139,8 +149,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6 md:py-8 lg:py-10 max-w-7xl">
-      <Toaster />
+    <div className="px-4 py-6 md:px-6 md:py-8 max-w-6xl mx-auto">
       <PageTitle
         title="Profile"
         subtitle="Manage your account settings and preferences"
@@ -222,7 +231,7 @@ const ProfilePage = () => {
 
         <Card
           className={
-            !user?.gender || !user.height ? "border border-amber-500" : ""
+            !user?.gender || !user.height ? "border-amber-500/70 dark:border-amber-400/50" : ""
           }
         >
           <CardHeader className="space-y-1 pb-6">
@@ -253,7 +262,7 @@ const ProfilePage = () => {
           </CardContent>
         </Card>
 
-        <Card className="border-red-600">
+        <Card className="border-destructive">
           <CardHeader className="space-y-1 pb-6">
             <CardTitle className="text-xl font-semibold">Danger Zone</CardTitle>
             <CardDescription className="text-base">
@@ -265,14 +274,14 @@ const ProfilePage = () => {
             <div className="flex justify-between items-center">
               <div>
                 <Label className="text-sm font-medium">Delete Account</Label>
-                <p className="mt-2 text-base text-red-600">
+                <p className="mt-2 text-base text-destructive">
                   Permanently delete your account and all associated data. This
                   action cannot be undone.
                 </p>
               </div>
 
               <Button
-                className="bg-red-500 text-white hover:bg-red-600"
+                variant="destructive"
                 onClick={handleDeleteClick}
               >
                 Delete Account
@@ -407,35 +416,27 @@ const ProfilePage = () => {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader className="space-y-1">
-            <DialogTitle className="text-xl font-semibold">
-              Delete Account
-            </DialogTitle>
-            <DialogDescription className="text-base">
+      <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Account</AlertDialogTitle>
+            <AlertDialogDescription>
               Are you sure you want to delete your account? This action is
               irreversible and will remove all your data from our system.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex justify-end gap-3 pt-6 border-t">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setIsDeleteOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              className="bg-red-500 text-white hover:bg-red-600"
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
               onClick={handleDeleteConfirm}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Confirm {loading && <Spinner />}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+              {loading && <Spinner className="mr-2 h-4 w-4" />}
+              Delete Account
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

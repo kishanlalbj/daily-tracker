@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -6,7 +6,7 @@ import { Form, FormField, FormMessage } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, PlusIcon } from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -26,6 +26,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { paths } from "@/constants";
+import { toast } from "sonner";
 
 const ExpenseSchema = z.object({
   expense_title: z.string().min(1, "Expense title is required"),
@@ -35,12 +36,6 @@ const ExpenseSchema = z.object({
   categoryId: z.number().optional()
 });
 
-type Category = {
-  id: string | number;
-  title: string;
-  created_at?: string;
-};
-
 type ExpenseFormData = z.infer<typeof ExpenseSchema>;
 
 interface ExpenseFormProps {
@@ -48,18 +43,22 @@ interface ExpenseFormProps {
   handleSubmit: (data: ExpenseFormData) => void;
   loading?: boolean;
   mode?: "add" | "edit";
+  categoryOptions: { label: string; value: number }[];
+  isCategoriesLoading?: boolean;
+  onCategoryCreated?: (opt: { label: string; value: number }) => void;
 }
 
 const ExpenseForm = ({
   data,
   handleSubmit,
   loading,
-  mode = "add"
+  mode = "add",
+  categoryOptions,
+  isCategoriesLoading = false,
+  onCategoryCreated
 }: ExpenseFormProps) => {
-  const [categoryOptions, setCategoryOptions] = useState<
-    { label: string; value: number }[]
-  >([]);
-  const [isCategoriesLoading, setIsCategoriesLoading] = useState(false);
+  const [categorySearch, setCategorySearch] = useState("");
+  const [isCreatingCategory, setIsCreatingCategory] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(ExpenseSchema),
@@ -78,29 +77,35 @@ const ExpenseForm = ({
     handleSubmit(data);
   };
 
-  useEffect(() => {
-    const getCategoryOptions = async () => {
-      try {
-        setIsCategoriesLoading(true);
-        const res = await fetch(`${paths.CATEGORY_API}`);
-
-        const resData = await res.json();
-
-        const formattedOptions = resData.data.map((opt: Category) => ({
-          label: opt.title,
-          value: opt.id
-        }));
-
-        setCategoryOptions(formattedOptions);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsCategoriesLoading(false);
+  const handleCreateCategory = async (
+    title: string,
+    onChange: (value: number) => void
+  ) => {
+    const trimmed = title.trim();
+    if (!trimmed) return;
+    try {
+      setIsCreatingCategory(true);
+      const res = await fetch(paths.CATEGORY_API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: trimmed })
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Failed to create category");
       }
-    };
-
-    getCategoryOptions();
-  }, []);
+      const { data } = await res.json();
+      const newOpt = { label: data.title, value: data.id };
+      onCategoryCreated?.(newOpt);
+      onChange(newOpt.value);
+      setCategorySearch("");
+      setOpen(false);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to create category");
+    } finally {
+      setIsCreatingCategory(false);
+    }
+  };
 
   return (
     <div>
@@ -170,8 +175,12 @@ const ExpenseForm = ({
                   <Input
                     placeholder="Amount"
                     type="number"
-                    value={Number(field.value)}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    value={field.value ? (field.value as number) : ""}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value === "" ? "" : Number(e.target.value)
+                      )
+                    }
                   ></Input>
                   <FormMessage></FormMessage>
                 </div>
@@ -205,7 +214,11 @@ const ExpenseForm = ({
                     align="start"
                   >
                     <Command className="w-full overflow-hidden md:min-w-[450px]">
-                      <CommandInput placeholder="Search category..." />
+                      <CommandInput
+                        placeholder="Search category..."
+                        value={categorySearch}
+                        onValueChange={setCategorySearch}
+                      />
 
                       {isCategoriesLoading ? (
                         <div className="p-2">
@@ -214,7 +227,24 @@ const ExpenseForm = ({
                       ) : (
                         <>
                           <CommandEmpty className="p-2">
-                            No category found.
+                            <button
+                              type="button"
+                              disabled={isCreatingCategory}
+                              onClick={() =>
+                                handleCreateCategory(
+                                  categorySearch,
+                                  field.onChange
+                                )
+                              }
+                              className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-left hover:bg-accent disabled:opacity-50"
+                            >
+                              {isCreatingCategory ? (
+                                <Spinner className="h-4 w-4" />
+                              ) : (
+                                <PlusIcon className="h-4 w-4" aria-hidden="true" />
+                              )}
+                              Create &ldquo;{categorySearch}&rdquo;
+                            </button>
                           </CommandEmpty>
 
                           <CommandGroup className="overflow-hidden">

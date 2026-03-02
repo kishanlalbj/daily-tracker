@@ -4,6 +4,8 @@ import {
   HeartPulseIcon,
   IndianRupeeIcon,
   LogOutIcon,
+  MoonIcon,
+  SunIcon,
   TrendingUpIcon,
   UserIcon
 } from "lucide-react";
@@ -23,7 +25,8 @@ import Link from "next/link";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { paths } from "@/constants";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
+import { useTheme } from "next-themes";
 
 const items = [
   {
@@ -51,6 +54,7 @@ const items = [
 export function AppSidebar() {
   const router = useRouter();
   const { isMobile, open, toggleSidebar } = useSidebar();
+  const { resolvedTheme, setTheme } = useTheme();
 
   const handleLogout = async () => {
     try {
@@ -78,7 +82,6 @@ export function AppSidebar() {
 
   return (
     <Sidebar variant="sidebar" collapsible="icon">
-      <Toaster />
       <SidebarHeader className="border-b">
         <div className="flex items-center gap-2 p-2">
           <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -112,7 +115,7 @@ export function AppSidebar() {
         <SidebarMenu className="gap-1">
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild>
+              <SidebarMenuButton asChild className="text-sm my-1">
                 <Link href={item.url}>
                   <item.icon scale={1.5} className="scale-110" />
                   <span>{item.title}</span>
@@ -123,14 +126,33 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarContent>
 
-      <SidebarFooter className="p-2">
+      <SidebarFooter className="border-t p-2 flex flex-col gap-1">
         <Button
-          variant="outline"
+          variant="ghost"
           size="sm"
-          className="w-full"
+          className="w-full justify-start"
+          onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+          aria-label={
+            resolvedTheme === "dark"
+              ? "Switch to light mode"
+              : "Switch to dark mode"
+          }
+        >
+          {resolvedTheme === "dark" ? (
+            <SunIcon className="h-4 w-4" aria-hidden="true" />
+          ) : (
+            <MoonIcon className="h-4 w-4" aria-hidden="true" />
+          )}
+          {open && (resolvedTheme === "dark" ? "Light Mode" : "Dark Mode")}
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full justify-start"
           onClick={handleLogout}
         >
-          <LogOutIcon /> {open && "Logout"}
+          <LogOutIcon className="h-4 w-4" aria-hidden="true" />{" "}
+          {open && "Logout"}
         </Button>
       </SidebarFooter>
     </Sidebar>

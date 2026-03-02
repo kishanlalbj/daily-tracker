@@ -2,19 +2,25 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const Loading = () => {
   return (
-    <>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 my-4">
-        {[...Array(3)].map((_, index) => (
-          <Skeleton key={index} className="h-32 w-full" />
+    <div className="flex flex-col gap-6 mt-6" role="status" aria-label="Loading dashboard">
+      {/* Stats row */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[...Array(4)].map((_, i) => (
+          <Skeleton key={i} className="h-28 w-full rounded-xl" />
         ))}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 my-4">
-        {[...Array(2)].map((_, index) => (
-          <Skeleton key={index} className="h-48 w-full" />
-        ))}
+      {/* Charts row — 3:2 split */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+        <Skeleton className="lg:col-span-3 h-72 w-full rounded-xl" />
+        <Skeleton className="lg:col-span-2 h-72 w-full rounded-xl" />
       </div>
-    </>
+
+      {/* Transactions block */}
+      <Skeleton className="h-64 w-full rounded-xl" />
+
+      <span className="sr-only">Loading dashboard data</span>
+    </div>
   );
 };
 

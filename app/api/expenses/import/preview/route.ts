@@ -32,12 +32,26 @@ export const POST = async (req: NextRequest) => {
     // @ts-expect-error data unkown
     const cleaned = cleanData(data);
 
-    const classified = await classifyTransactions(categories, cleaned);
+    const isOpenAIEnabled = !!process.env.OPENAI_API_KEY;
+
+    let classifiedResults: { categoryId: number | null; category: string | null }[];
+
+    if (isOpenAIEnabled) {
+      classifiedResults = await classifyTransactions(categories, cleaned);
+    } else {
+      const miscCategory = categories.find(
+        (c) => c.title.toLowerCase() === "miscellaneous"
+      );
+      classifiedResults = cleaned.map(() => ({
+        categoryId: miscCategory?.id ?? null,
+        category: miscCategory?.title ?? null
+      }));
+    }
 
     const enrichedData = cleaned.map((item, index) => ({
       ...item,
-      categoryId: classified[index]?.categoryId || null,
-      category: classified[index]?.category || null
+      categoryId: classifiedResults[index]?.categoryId || null,
+      category: classifiedResults[index]?.category || null
     }));
 
     const transformed = transformToExpense(enrichedData, userId);
