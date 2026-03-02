@@ -41,6 +41,14 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table";
 import { format } from "date-fns";
 
 const DashboardPage = () => {
@@ -105,7 +113,9 @@ const DashboardPage = () => {
       <PageTitle
         title="Dashboard"
         subtitle={`Hello, ${user?.first_name} ${user?.last_name}`}
-        actionSlot={<DateRangePicker value={dateRange} onChange={setDateRange} />}
+        actionSlot={
+          <DateRangePicker value={dateRange} onChange={setDateRange} />
+        }
       />
 
       {(!user?.gender || !user.height) && (
@@ -160,9 +170,7 @@ const DashboardPage = () => {
 
                 <StatsCard
                   title="Top Category"
-                  value={
-                    data?.expenses?.topSpendingCategory?.category ?? "–"
-                  }
+                  value={data?.expenses?.topSpendingCategory?.category ?? "–"}
                   icon={Tag}
                   subtitle={formatCurrency(
                     data?.expenses?.topSpendingCategory?.total
@@ -206,7 +214,7 @@ const DashboardPage = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle>Recent Transactions</CardTitle>
-                      <CardDescription>
+                      <CardDescription className="mt-2">
                         {recentTransactions.length > 0
                           ? `Latest ${recentTransactions.length} transactions in this period`
                           : "No transactions in this period"}
@@ -219,63 +227,56 @@ const DashboardPage = () => {
                 </CardHeader>
                 <CardContent className="p-0">
                   {recentTransactions.length > 0 ? (
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-t border-b bg-muted/50">
-                          <th
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-muted/50 hover:bg-muted/50">
+                          <TableHead
                             scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium text-muted-foreground"
+                            className="px-4 text-xs font-medium text-muted-foreground"
                           >
                             Description
-                          </th>
-                          <th
+                          </TableHead>
+                          <TableHead
                             scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium text-muted-foreground"
+                            className="px-4 text-xs font-medium text-muted-foreground"
                           >
                             Category
-                          </th>
-                          <th
+                          </TableHead>
+                          <TableHead
                             scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium text-muted-foreground hidden sm:table-cell"
+                            className="px-4 text-xs font-medium text-muted-foreground hidden sm:table-cell"
                           >
                             Date
-                          </th>
-                          <th
+                          </TableHead>
+                          <TableHead
                             scope="col"
-                            className="px-6 py-3 text-right text-xs font-medium text-muted-foreground"
+                            className="px-4 text-xs font-medium text-muted-foreground text-right"
                           >
                             Amount
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {recentTransactions.map((tx, idx) => (
-                          <tr
-                            key={tx.id}
-                            className={
-                              idx < recentTransactions.length - 1
-                                ? "border-b border-border/60 hover:bg-muted/30 transition-colors"
-                                : "hover:bg-muted/30 transition-colors"
-                            }
-                          >
-                            <td className="px-6 py-3 text-sm font-medium max-w-[180px] truncate">
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {recentTransactions.map((tx) => (
+                          <TableRow key={tx.id}>
+                            <TableCell className="px-4 font-medium max-w-48 truncate">
                               {tx.expense_title}
-                            </td>
-                            <td className="px-6 py-3">
+                            </TableCell>
+                            <TableCell className="px-4">
                               <Badge variant="secondary" className="text-xs">
                                 {tx.category.title}
                               </Badge>
-                            </td>
-                            <td className="px-6 py-3 text-xs text-muted-foreground hidden sm:table-cell">
+                            </TableCell>
+                            <TableCell className="px-4 text-xs text-muted-foreground hidden sm:table-cell">
                               {format(new Date(tx.date), "MMM dd, yyyy")}
-                            </td>
-                            <td className="px-6 py-3 text-sm font-mono tabular-nums text-right">
+                            </TableCell>
+                            <TableCell className="px-4 font-mono tabular-nums text-right">
                               {formatCurrency(Number(tx.amount))}
-                            </td>
-                          </tr>
+                            </TableCell>
+                          </TableRow>
                         ))}
-                      </tbody>
-                    </table>
+                      </TableBody>
+                    </Table>
                   ) : (
                     <div className="flex flex-col items-center justify-center py-12 text-center">
                       <p className="text-sm text-muted-foreground">
@@ -324,9 +325,15 @@ const DashboardPage = () => {
                       {bmiTrend && (
                         <span className="ml-1.5 inline-flex items-center text-muted-foreground">
                           {bmiTrend.symbol === "+" ? (
-                            <TrendingUpIcon className="h-3 w-3 text-red-500" aria-hidden="true" />
+                            <TrendingUpIcon
+                              className="h-3 w-3 text-red-500"
+                              aria-hidden="true"
+                            />
                           ) : (
-                            <TrendingDownIcon className="h-3 w-3 text-emerald-500" aria-hidden="true" />
+                            <TrendingDownIcon
+                              className="h-3 w-3 text-emerald-500"
+                              aria-hidden="true"
+                            />
                           )}
                         </span>
                       )}
