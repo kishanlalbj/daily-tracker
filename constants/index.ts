@@ -9,5 +9,6 @@ export const paths = {
   REGISTER_API: `${BASE_API_URL}/auth/register`,
   LOGOUT_API: `${BASE_API_URL}/auth/logout`,
   DASHBOARD_API: `${BASE_API_URL}/dashboard`,
-  DELETE_USERS_API: `${BASE_API_URL}/users/delete`
+  DELETE_USERS_API: `${BASE_API_URL}/users/delete`,
+  RECURRING_EXPENSE_API: `${BASE_API_URL}/recurring-expenses`
 };

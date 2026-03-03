@@ -29,7 +29,7 @@ async function seed() {
         title: "Rent"
       },
       {
-        title: "Invesments"
+        title: "Investments"
       },
       {
         title: "Subscriptions"
