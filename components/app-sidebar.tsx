@@ -5,6 +5,7 @@ import {
   IndianRupeeIcon,
   LogOutIcon,
   MoonIcon,
+  RepeatIcon,
   SunIcon,
   TrendingUpIcon,
   UserIcon
@@ -14,6 +15,9 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -28,26 +32,35 @@ import { paths } from "@/constants";
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
 
-const items = [
+const navGroups = [
   {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: GaugeIcon
+    label: "Overview",
+    items: [{ title: "Dashboard", url: "/dashboard", icon: GaugeIcon }]
   },
   {
-    title: "Health Tracker",
-    url: "/health-tracker",
-    icon: HeartPulseIcon
+    label: "Health",
+    items: [
+      { title: "Health Tracker", url: "/health-tracker", icon: HeartPulseIcon }
+    ]
   },
   {
-    title: "Expenses Tracker",
-    url: "/expense-tracker",
-    icon: IndianRupeeIcon
+    label: "Expenses",
+    items: [
+      {
+        title: "Expenses Tracker",
+        url: "/expense-tracker",
+        icon: IndianRupeeIcon
+      },
+      {
+        title: "Recurring Expenses",
+        url: "/expense-tracker/recurring",
+        icon: RepeatIcon
+      }
+    ]
   },
   {
-    title: "Profile",
-    url: "/profile",
-    icon: UserIcon
+    label: "Account",
+    items: [{ title: "Profile", url: "/profile", icon: UserIcon }]
   }
 ];
 
@@ -112,23 +125,30 @@ export function AppSidebar() {
           )}
         </div>
       </SidebarHeader>
-      <SidebarContent className="px-2 py-4">
-        <SidebarMenu className="gap-1">
-          {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === item.url}
-                className="text-sm my-1 text-sidebar-foreground/70 font-medium data-[active=true]:font-semibold data-[active=true]:text-sidebar-foreground"
-              >
-                <Link href={item.url}>
-                  <item.icon scale={1.5} className="scale-120" />
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
+      <SidebarContent className="py-1">
+        {navGroups.map((group) => (
+          <SidebarGroup key={group.label}>
+            <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {group.items.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === item.url}
+                      className="text-sm text-sidebar-foreground/70 font-medium data-[active=true]:font-semibold data-[active=true]:text-sidebar-foreground"
+                    >
+                      <Link href={item.url}>
+                        <item.icon scale={1.5} className="scale-120" />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
 
       <SidebarFooter className="border-t p-2 flex flex-col gap-1">

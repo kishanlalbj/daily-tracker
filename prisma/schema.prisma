@@ -23,6 +23,14 @@ enum Provider {
   google
 }
 
+enum Frequency {
+  daily
+  weekly
+  biweekly
+  monthly
+  yearly
+}
+
 model User {
   id Int @id @default(autoincrement())
   first_name String
@@ -38,8 +46,9 @@ model User {
   created_at DateTime @default(now())
   last_login_at DateTime?
 
-  healthTrackers HealthTracker[]
-  expenseTrackers ExpenseTracker[]
+  healthTrackers     HealthTracker[]
+  expenseTrackers    ExpenseTracker[]
+  recurringExpenses  RecurringExpense[]
 }
 
 model HealthTracker {
@@ -57,22 +66,43 @@ model HealthTracker {
 
 
 model ExpenseTracker {
-  id            Int @id @default(autoincrement())
-  date          DateTime
-  expense_title String
-  amount        Decimal @db.Decimal
-  categoryId    Int
-  category      Category @relation(fields: [categoryId], references: [id])
-  userId        Int
-  user          User @relation(fields: [userId], references: [id])
-  created_at    DateTime @default(now())
+  id                  Int               @id @default(autoincrement())
+  date                DateTime
+  expense_title       String
+  amount              Decimal           @db.Decimal
+  categoryId          Int
+  category            Category          @relation(fields: [categoryId], references: [id])
+  userId              Int
+  user                User              @relation(fields: [userId], references: [id])
+  recurringExpenseId  Int?
+  recurringExpense    RecurringExpense?  @relation(fields: [recurringExpenseId], references: [id])
+  created_at          DateTime          @default(now())
+}
+
+model RecurringExpense {
+  id             Int              @id @default(autoincrement())
+  expense_title  String
+  amount         Decimal          @db.Decimal
+  frequency      Frequency
+  start_date     DateTime
+  end_date       DateTime?
+  next_run_date  DateTime
+  last_run_date  DateTime?
+  is_active      Boolean          @default(true)
+  categoryId     Int
+  category       Category         @relation(fields: [categoryId], references: [id])
+  userId         Int
+  user           User             @relation(fields: [userId], references: [id])
+  created_at     DateTime         @default(now())
+  expenseTrackers ExpenseTracker[]
 }
 
 
 model Category {
-  id                Int @id @default(autoincrement())
-  title             String @unique
-  created_at        DateTime @default(now())
+  id                 Int                @id @default(autoincrement())
+  title              String             @unique
+  created_at         DateTime           @default(now())
 
-  expense_trackers  ExpenseTracker[]
+  expense_trackers   ExpenseTracker[]
+  recurringExpenses  RecurringExpense[]
 }

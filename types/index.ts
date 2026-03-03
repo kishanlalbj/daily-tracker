@@ -1,4 +1,5 @@
 import { type TrendDirection } from "@/lib/trend-utils";
+import type { Frequency } from "@/lib/recurring-utils";
 
 export enum GENDER {
   MALE = "male",
@@ -27,6 +28,21 @@ export interface Expense {
   category: {
     title: string;
   };
+}
+
+export interface RecurringExpense {
+  id: number;
+  expense_title: string;
+  amount: number;
+  frequency: Frequency;
+  start_date: string;
+  end_date: string | null;
+  next_run_date: string;
+  last_run_date: string | null;
+  is_active: boolean;
+  categoryId: number;
+  category: { title: string };
+  created_at: string;
 }
 
 export interface Measurement {

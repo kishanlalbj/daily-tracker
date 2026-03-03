@@ -1,0 +1,82 @@
+import prisma from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
+import { computeNextRunDate } from "@/lib/recurring-utils";
+import type { Frequency } from "@/lib/recurring-utils";
+
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const userId = req.headers.get("x-user-id");
+    const body = await req.json();
+
+    const existing = await prisma.recurringExpense.findFirst({
+      where: { id: Number(id), userId: Number(userId) }
+    });
+
+    if (!existing) {
+      return NextResponse.json({ message: "Not found" }, { status: 404 });
+    }
+
+    // Pause / resume toggle — only is_active sent
+    if ("is_active" in body && Object.keys(body).length === 1) {
+      const updated = await prisma.recurringExpense.update({
+        where: { id: Number(id) },
+        data: { is_active: body.is_active },
+        include: { category: { select: { title: true } } }
+      });
+      return NextResponse.json({ data: updated }, { status: 200 });
+    }
+
+    const { expense_title, amount, category, frequency, start_date, end_date, is_active } =
+      body;
+    const nextRunDate = computeNextRunDate(new Date(start_date), frequency as Frequency);
+
+    const updated = await prisma.recurringExpense.update({
+      where: { id: Number(id) },
+      data: {
+        expense_title,
+        amount,
+        frequency,
+        start_date: new Date(start_date),
+        end_date: end_date ? new Date(end_date) : null,
+        next_run_date: nextRunDate,
+        categoryId: category,
+        is_active: is_active ?? true
+      },
+      include: { category: { select: { title: true } } }
+    });
+
+    return NextResponse.json({ data: updated }, { status: 200 });
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const userId = req.headers.get("x-user-id");
+
+    const existing = await prisma.recurringExpense.findFirst({
+      where: { id: Number(id), userId: Number(userId) }
+    });
+
+    if (!existing) {
+      return NextResponse.json({ message: "Not found" }, { status: 404 });
+    }
+
+    await prisma.recurringExpense.delete({ where: { id: Number(id) } });
+
+    return NextResponse.json({ message: "Deleted successfully" }, { status: 200 });
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
+  }
+}
