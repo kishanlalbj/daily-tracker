@@ -8,7 +8,8 @@ import {
   RepeatIcon,
   SunIcon,
   TrendingUpIcon,
-  UserIcon
+  UserIcon,
+  WalletIcon
 } from "lucide-react";
 
 import {
@@ -46,6 +47,11 @@ const navGroups = [
   {
     label: "Expenses",
     items: [
+      {
+        title: "Assets",
+        url: "/assets",
+        icon: WalletIcon
+      },
       {
         title: "Expenses Tracker",
         url: "/expense-tracker",

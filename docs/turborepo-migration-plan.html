@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Turborepo Migration Plan — Daily Tracker</title>
+  <style>
+    /* ── Reset & Base ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 13px;
+      line-height: 1.65;
+      color: #1a1a2e;
+      background: #fff;
+      padding: 0;
+    }
+
+    /* ── Print layout ─────────────────────────────────────── */
+    @media print {
+      body { padding: 0; }
+      .cover { page-break-after: always; }
+      section { page-break-inside: avoid; }
+      h2 { page-break-before: auto; }
+      .no-print { display: none; }
+      @page { margin: 18mm 16mm; size: A4; }
+    }
+
+    /* ── Cover Page ───────────────────────────────────────── */
+    .cover {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px 72px;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0d2137 100%);
+      color: #fff;
+    }
+
+    .cover-tag {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #64dfdf;
+      margin-bottom: 24px;
+    }
+
+    .cover h1 {
+      font-size: 42px;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      color: #fff;
+    }
+
+    .cover h1 span { color: #64dfdf; }
+
+    .cover-sub {
+      font-size: 16px;
+      color: #94a3b8;
+      margin-bottom: 48px;
+      max-width: 520px;
+    }
+
+    .cover-meta {
+      display: flex;
+      gap: 40px;
+      font-size: 12px;
+      color: #64748b;
+      margin-top: auto;
+      padding-top: 40px;
+      border-top: 1px solid #1e293b;
+    }
+
+    .cover-meta strong { display: block; color: #94a3b8; margin-bottom: 2px; }
+
+    /* ── Page Body ────────────────────────────────────────── */
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 48px 48px 64px;
+    }
+
+    /* ── Typography ───────────────────────────────────────── */
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 40px 0 14px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h2 .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px; height: 26px;
+      border-radius: 6px;
+      background: #0f172a;
+      color: #64dfdf;
+      font-size: 12px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 22px 0 8px;
+    }
+
+    p { margin-bottom: 10px; color: #374151; }
+
+    strong { color: #0f172a; }
+
+    ul, ol {
+      padding-left: 20px;
+      margin-bottom: 12px;
+    }
+
+    li { margin-bottom: 5px; color: #374151; }
+
+    li strong { color: #0f172a; }
+
+    /* ── Section card ─────────────────────────────────────── */
+    section {
+      margin-bottom: 8px;
+    }
+
+    /* ── Info box ─────────────────────────────────────────── */
+    .info-box {
+      border-left: 4px solid #64dfdf;
+      background: #f0fdfa;
+      padding: 12px 16px;
+      border-radius: 0 6px 6px 0;
+      margin: 14px 0;
+      font-size: 12.5px;
+      color: #134e4a;
+    }
+
+    .warn-box {
+      border-left: 4px solid #f59e0b;
+      background: #fffbeb;
+      padding: 12px 16px;
+      border-radius: 0 6px 6px 0;
+      margin: 14px 0;
+      font-size: 12.5px;
+      color: #78350f;
+    }
+
+    .rec-box {
+      border-left: 4px solid #6366f1;
+      background: #eef2ff;
+      padding: 14px 18px;
+      border-radius: 0 6px 6px 0;
+      margin: 14px 0;
+      font-size: 12.5px;
+      color: #312e81;
+    }
+
+    /* ── Tables ───────────────────────────────────────────── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 12.5px;
+    }
+
+    thead tr { background: #0f172a; }
+
+    thead th {
+      padding: 9px 12px;
+      text-align: left;
+      color: #e2e8f0;
+      font-weight: 600;
+      font-size: 11.5px;
+      letter-spacing: 0.04em;
+    }
+
+    tbody tr { border-bottom: 1px solid #e2e8f0; }
+
+    tbody tr:nth-child(even) { background: #f8fafc; }
+
+    tbody td {
+      padding: 8px 12px;
+      color: #374151;
+      vertical-align: top;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .badge-green { background: #dcfce7; color: #15803d; }
+    .badge-yellow { background: #fef9c3; color: #a16207; }
+    .badge-red { background: #fee2e2; color: #b91c1c; }
+    .badge-blue { background: #dbeafe; color: #1d4ed8; }
+
+    /* ── Code blocks ──────────────────────────────────────── */
+    pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 16px 18px;
+      border-radius: 8px;
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      font-size: 11.5px;
+      line-height: 1.7;
+      overflow-x: auto;
+      margin: 12px 0;
+    }
+
+    code {
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      font-size: 11.5px;
+      background: #f1f5f9;
+      color: #0f172a;
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+
+    .c-cyan   { color: #67e8f9; }
+    .c-green  { color: #86efac; }
+    .c-yellow { color: #fde68a; }
+    .c-gray   { color: #64748b; }
+    .c-purple { color: #c4b5fd; }
+
+    /* ── Timeline ─────────────────────────────────────────── */
+    .timeline { list-style: none; padding: 0; margin: 16px 0; }
+
+    .timeline li {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 0;
+      position: relative;
+    }
+
+    .timeline li + li::before {
+      content: '';
+      position: absolute;
+      left: 14px;
+      top: -16px;
+      width: 2px;
+      height: 16px;
+      background: #e2e8f0;
+    }
+
+    .tl-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .tl-dot-1 { background: #0f172a; color: #64dfdf; }
+    .tl-dot-2 { background: #1e40af; color: #bfdbfe; }
+    .tl-dot-3 { background: #065f46; color: #a7f3d0; }
+    .tl-dot-4 { background: #6d28d9; color: #ddd6fe; }
+
+    .tl-body {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px 16px;
+      flex: 1;
+      margin-bottom: 12px;
+    }
+
+    .tl-body h4 { font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 6px; }
+    .tl-body p  { font-size: 12px; margin: 0; color: #475569; }
+    .tl-body ul { font-size: 12px; margin: 6px 0 0; color: #475569; }
+
+    /* ── Impact grid ──────────────────────────────────────── */
+    .impact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 14px 0;
+    }
+
+    .impact-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+
+    .impact-card h4 {
+      font-size: 12px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    .impact-card p {
+      font-size: 11.5px;
+      color: #64748b;
+      margin: 0;
+    }
+
+    /* ── Print button ─────────────────────────────────────── */
+    .print-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      background: #0f172a;
+      color: #64dfdf;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .print-btn:hover { background: #1e293b; }
+
+    /* ── Footer ───────────────────────────────────────────── */
+    .footer {
+      margin-top: 48px;
+      padding-top: 20px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 11px;
+      color: #94a3b8;
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Print button (hidden in PDF) -->
+<button class="print-btn no-print" onclick="window.print()">
+  ⬇ Save as PDF
+</button>
+
+<!-- ══════════════════════════════════════════════════════════
+     COVER PAGE
+════════════════════════════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-tag">Architecture · Migration · Planning</div>
+  <h1>Turborepo<br/><span>Migration Plan</span></h1>
+  <p class="cover-sub">
+    Analysis, task breakdown, and sequenced roadmap for migrating
+    the Daily Tracker into a scalable monorepo supporting Web, Mobile, and Backend.
+  </p>
+
+  <div class="cover-meta">
+    <div><strong>Project</strong>Daily Tracker</div>
+    <div><strong>Current Stack</strong>Next.js 16 · Prisma · Vercel</div>
+    <div><strong>Target</strong>Turborepo · pnpm workspaces</div>
+    <div><strong>Date</strong>March 2026</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     BODY
+════════════════════════════════════════════════════════════ -->
+<div class="page">
+
+  <!-- ─── 1. Current State ─────────────────────────────────── -->
+  <section>
+    <h2><span class="num">1</span> Current State</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Aspect</th>
+          <th>Current</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Structure</strong></td><td>Single Next.js 16 app</td><td>All code at repo root</td></tr>
+        <tr><td><strong>Package manager</strong></td><td>npm</td><td>package-lock.json present</td></tr>
+        <tr><td><strong>API layer</strong></td><td>Next.js route handlers</td><td>22+ endpoints in <code>app/api/</code></td></tr>
+        <tr><td><strong>Auth</strong></td><td>Custom JWT middleware</td><td><code>proxy.ts</code> + jose/jsonwebtoken</td></tr>
+        <tr><td><strong>Database</strong></td><td>Prisma + PostgreSQL</td><td>5 models, 20 migrations</td></tr>
+        <tr><td><strong>Deployment</strong></td><td>Vercel (Hobby)</td><td>vercel.json cron at 00:00 UTC</td></tr>
+        <tr><td><strong>CI/CD</strong></td><td>None</td><td>No .github/workflows/</td></tr>
+        <tr><td><strong>Mobile</strong></td><td>None</td><td>New app to be added</td></tr>
+        <tr><td><strong>Monorepo</strong></td><td>None</td><td>No turbo.json / pnpm-workspace.yaml</td></tr>
+      </tbody>
+    </table>
+
+    <h3>API Surface (22+ endpoints)</h3>
+    <table>
+      <thead><tr><th>Group</th><th>Endpoints</th></tr></thead>
+      <tbody>
+        <tr><td>Auth</td><td>login, register, logout, /me, google OAuth + callback</td></tr>
+        <tr><td>Expenses</td><td>list, create, update, delete, import (CSV), preview + classify (OpenAI)</td></tr>
+        <tr><td>Recurring</td><td>list, create, update, delete</td></tr>
+        <tr><td>Health</td><td>list, create</td></tr>
+        <tr><td>Dashboard</td><td>aggregated stats</td></tr>
+        <tr><td>Cron</td><td>process-recurring (runs daily via Vercel cron)</td></tr>
+        <tr><td>Users</td><td>get/update profile, delete account</td></tr>
+        <tr><td>Category</td><td>list/create categories</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ─── 2. What Turborepo Gives You ─────────────────────── -->
+  <section>
+    <h2><span class="num">2</span> What Turborepo Gives You</h2>
+
+    <p>Turborepo is a high-performance build system for JavaScript/TypeScript monorepos. It does not change how your code runs — it changes how your repository is <strong>organised</strong> and <strong>built</strong>.</p>
+
+    <div class="impact-grid">
+      <div class="impact-card">
+        <h4>Task Caching</h4>
+        <p>Build outputs are cached by content hash. If nothing changed in <code>packages/database</code>, it is never rebuilt.</p>
+      </div>
+      <div class="impact-card">
+        <h4>Parallel Execution</h4>
+        <p>Turbo runs independent tasks simultaneously. Web build and mobile build run in parallel.</p>
+      </div>
+      <div class="impact-card">
+        <h4>Shared Packages</h4>
+        <p>Types, Prisma client, auth utilities, and ESLint/TS configs are defined once and imported by every app.</p>
+      </div>
+      <div class="impact-card">
+        <h4>Remote Cache (free)</h4>
+        <p>Vercel provides a free remote cache for Turborepo. CI never rebuilds already-cached packages.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 3. Target Structure ──────────────────────────────── -->
+  <section>
+    <h2><span class="num">3</span> Target Repository Structure</h2>
+
+<pre><code><span class="c-yellow">daily-tracker/</span>                     <span class="c-gray"># repo root — no runnable code here</span>
+├── <span class="c-cyan">turbo.json</span>                     <span class="c-gray"># task pipeline (build, dev, lint)</span>
+├── <span class="c-cyan">pnpm-workspace.yaml</span>            <span class="c-gray"># declares apps/* and packages/*</span>
+├── <span class="c-cyan">package.json</span>                   <span class="c-gray"># root scripts only</span>
+│
+├── <span class="c-green">apps/</span>
+│   ├── <span class="c-green">web/</span>                       <span class="c-gray"># current Next.js 16 app (migrated here)</span>
+│   │   ├── app/
+│   │   ├── components/
+│   │   ├── prisma.config.ts
+│   │   ├── next.config.ts
+│   │   ├── vercel.json             <span class="c-gray"># cron job stays here</span>
+│   │   └── package.json
+│   │
+│   └── <span class="c-purple">mobile/</span>                    <span class="c-gray"># new Expo / React Native app</span>
+│       ├── app/                   <span class="c-gray"># Expo Router</span>
+│       ├── components/
+│       └── package.json
+│
+└── <span class="c-cyan">packages/</span>
+    ├── <span class="c-cyan">database/</span>                  <span class="c-gray"># Prisma schema + generated client</span>
+    │   ├── prisma/schema.prisma
+    │   ├── prisma/migrations/
+    │   ├── src/index.ts           <span class="c-gray"># exports PrismaClient singleton</span>
+    │   └── package.json
+    │
+    ├── <span class="c-cyan">types/</span>                     <span class="c-gray"># shared TypeScript interfaces</span>
+    │   ├── src/index.ts
+    │   └── package.json
+    │
+    ├── <span class="c-cyan">auth/</span>                      <span class="c-gray"># JWT helpers, shared auth utilities</span>
+    │   ├── src/jwt.ts
+    │   └── package.json
+    │
+    └── <span class="c-cyan">config/</span>
+        ├── eslint/                <span class="c-gray"># shared ESLint config</span>
+        ├── typescript/            <span class="c-gray"># shared tsconfig base</span>
+        └── tailwind/              <span class="c-gray"># shared Tailwind preset</span></code></pre>
+
+    <div class="info-box">
+      <strong>Note on <code>packages/ui</code>:</strong> It is tempting to move <code>components/ui/</code> here, but shadcn/ui components are web-only (Radix UI + Tailwind). Mobile uses React Native components. Defer this package until a second web app exists.
+    </div>
+  </section>
+
+  <!-- ─── 4. Migration Tasks ───────────────────────────────── -->
+  <section>
+    <h2><span class="num">4</span> Migration Tasks — Detailed</h2>
+
+    <h3>Phase 1 — Repository Restructure</h3>
+    <table>
+      <thead><tr><th>#</th><th>Task</th><th>Details</th><th>Effort</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>1.1</td>
+          <td><strong>Switch to pnpm</strong></td>
+          <td>Delete <code>package-lock.json</code>. Run <code>corepack enable pnpm</code>. Run <code>pnpm import</code> to convert lockfile. All team members must use pnpm CLI going forward.</td>
+          <td><span class="badge badge-green">Low</span></td>
+        </tr>
+        <tr>
+          <td>1.2</td>
+          <td><strong>Create workspace root</strong></td>
+          <td>New root <code>package.json</code> with <code>"workspaces": ["apps/*","packages/*"]</code>. Add <code>pnpm-workspace.yaml</code>. Root has no app dependencies — only Turbo dev dependency.</td>
+          <td><span class="badge badge-green">Low</span></td>
+        </tr>
+        <tr>
+          <td>1.3</td>
+          <td><strong>Add turbo.json</strong></td>
+          <td>Define pipeline for <code>build</code>, <code>dev</code>, <code>lint</code>, <code>db:generate</code>, <code>db:migrate</code>. Set <code>dependsOn: ["^build"]</code> so packages build before apps.</td>
+          <td><span class="badge badge-green">Low</span></td>
+        </tr>
+        <tr>
+          <td>1.4</td>
+          <td><strong>Move app to apps/web/</strong></td>
+          <td>Move all files from repo root into <code>apps/web/</code>. Update <code>components.json</code> aliase paths. Update Dockerfile <code>COPY</code> paths. Verify <code>@/*</code> path alias still resolves from <code>apps/web/</code>.</td>
+          <td><span class="badge badge-yellow">Medium</span></td>
+        </tr>
+        <tr>
+          <td>1.5</td>
+          <td><strong>Update Vercel project</strong></td>
+          <td>In Vercel dashboard → Project Settings → Root Directory → set to <code>apps/web</code>. Vercel auto-detects Turborepo and enables remote cache.</td>
+          <td><span class="badge badge-green">Low</span></td>
+        </tr>
+        <tr>
+          <td>1.6</td>
+          <td><strong>Verify production deploy</strong></td>
+          <td>Push to main. Confirm Vercel builds successfully. Check cron job is still detected in <code>apps/web/vercel.json</code>. Smoke-test all pages.</td>
+          <td><span class="badge badge-green">Low</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Phase 2 — Extract Shared Packages</h3>
+    <table>
+      <thead><tr><th>#</th><th>Task</th><th>Details</th><th>Effort</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>2.1</td>
+          <td><strong>packages/database</strong></td>
+          <td>Move <code>prisma/</code>, <code>generated/</code>, <code>lib/prisma.ts</code>, <code>prisma.config.ts</code>. Update <code>schema.prisma</code> output path to <code>../../generated/prisma</code>. Export <code>PrismaClient</code> singleton from <code>src/index.ts</code>. Add to web's dependencies as <code>"@daily-tracker/database": "workspace:*"</code>.</td>
+          <td><span class="badge badge-yellow">Medium</span></td>
+        </tr>
+        <tr>
+          <td>2.2</td>
+          <td><strong>packages/types</strong></td>
+          <td>Move <code>types/index.ts</code>. Export all shared interfaces (User, Expense, HealthRecord, DashboardData, etc.). Both web and mobile will import from <code>@daily-tracker/types</code>.</td>
+          <td><span class="badge badge-green">Low</span></td>
+        </tr>
+        <tr>
+          <td>2.3</td>
+          <td><strong>packages/auth</strong></td>
+          <td>Move <code>lib/jwt.ts</code> auth helpers. Keep <code>proxy.ts</code> / <code>middleware.ts</code> inside <code>apps/web/</code> (Next.js-specific). Auth package exports pure functions: <code>signToken</code>, <code>verifyToken</code>.</td>
+          <td><span class="badge badge-green">Low</span></td>
+        </tr>
+        <tr>
+          <td>2.4</td>
+          <td><strong>packages/config</strong></td>
+          <td>Extract base <code>tsconfig.json</code> into <code>packages/config/typescript/base.json</code>. Extract ESLint config. Each app's <code>tsconfig.json</code> does <code>"extends": "@daily-tracker/config/typescript/nextjs"</code>.</td>
+          <td><span class="badge badge-green">Low</span></td>
+        </tr>
+        <tr>
+          <td>2.5</td>
+          <td><strong>Update all imports</strong></td>
+          <td>Find all <code>import ... from '@/lib/prisma'</code>, <code>'@/types'</code>, <code>'@/lib/jwt'</code> across <code>apps/web/</code> and update to workspace package names.</td>
+          <td><span class="badge badge-yellow">Medium</span></td>
+        </tr>
+        <tr>
+          <td>2.6</td>
+          <td><strong>Update postinstall</strong></td>
+          <td>Move <code>prisma generate && prisma migrate deploy</code> from root to <code>packages/database/package.json</code> scripts. Turbo pipeline runs it automatically before build.</td>
+          <td><span class="badge badge-green">Low</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Phase 3 — Mobile App (apps/mobile)</h3>
+    <table>
+      <thead><tr><th>#</th><th>Task</th><th>Details</th><th>Effort</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>3.1</td>
+          <td><strong>Scaffold Expo app</strong></td>
+          <td>Run <code>pnpm create expo-app apps/mobile --template</code>. Use Expo Router (file-based routing, mirrors Next.js App Router). Choose TypeScript template.</td>
+          <td><span class="badge badge-green">Low</span></td>
+        </tr>
+        <tr>
+          <td>3.2</td>
+          <td><strong>Install NativeWind</strong></td>
+          <td>NativeWind v4 brings Tailwind CSS to React Native. Provides style parity with the web app without sharing component files.</td>
+          <td><span class="badge badge-yellow">Medium</span></td>
+        </tr>
+        <tr>
+          <td>3.3</td>
+          <td><strong>Wire shared packages</strong></td>
+          <td>Add <code>@daily-tracker/types</code> and <code>@daily-tracker/auth</code> to <code>apps/mobile/package.json</code>. <em>Do not</em> add <code>@daily-tracker/database</code> — mobile never connects to DB directly.</td>
+          <td><span class="badge badge-green">Low</span></td>
+        </tr>
+        <tr>
+          <td>3.4</td>
+          <td><strong>API client layer</strong></td>
+          <td>Mobile calls the deployed web app's REST API. Create <code>apps/mobile/lib/api.ts</code> with fetch wrappers. Use <code>EXPO_PUBLIC_API_URL</code> env variable pointing at the Vercel deployment.</td>
+          <td><span class="badge badge-yellow">Medium</span></td>
+        </tr>
+        <tr>
+          <td>3.5</td>
+          <td><strong>Auth flow</strong></td>
+          <td>Mobile uses <code>expo-secure-store</code> to store JWT. Reuse token verification from <code>@daily-tracker/auth</code> or call <code>/api/auth/me</code> on each app launch.</td>
+          <td><span class="badge badge-red">High</span></td>
+        </tr>
+        <tr>
+          <td>3.6</td>
+          <td><strong>EAS Build setup</strong></td>
+          <td>Expo Application Services (EAS) handles mobile CI/CD. Free tier available. Configure <code>eas.json</code> in <code>apps/mobile/</code>. EAS is separate from Vercel.</td>
+          <td><span class="badge badge-yellow">Medium</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Phase 4 — Optional: Dedicated Backend (apps/api)</h3>
+    <div class="warn-box">
+      <strong>Skip this phase initially.</strong> Your Next.js API routes work perfectly for both web and mobile. A separate backend introduces infrastructure complexity, an additional deployment, and a CORS configuration burden. Revisit only if you hit a concrete limitation.
+    </div>
+    <p>If you proceed: the <code>hono</code> package already exists in your <code>overrides</code>, signalling intent. Move all <code>app/api/**</code> handlers to a Hono server in <code>apps/api/</code>. Deploy as a separate Vercel project or on Railway/Render.</p>
+  </section>
+
+  <!-- ─── 5. Key Considerations ────────────────────────────── -->
+  <section>
+    <h2><span class="num">5</span> Key Considerations Before Migrating</h2>
+
+    <h3>5.1 Prisma in a Shared Package — Most Complex Part</h3>
+    <p>Prisma generates its client at build time. In a monorepo, the <code>packages/database</code> package owns the schema and runs <code>prisma generate</code>. The generated client is then imported by <code>apps/web</code>. The <code>output</code> field in <code>schema.prisma</code> must be an absolute or properly relative path inside the package.</p>
+    <div class="warn-box">
+      <strong>Test this locally before any migration commit.</strong> If Prisma client paths are wrong, the web app will fail to import the client and the build will break. This is the highest-risk step.
+    </div>
+
+    <h3>5.2 The postinstall Hook</h3>
+    <p>Your root <code>package.json</code> currently runs <code>prisma generate && prisma migrate deploy</code> on <code>postinstall</code>. In the monorepo this moves to <code>packages/database</code>. Turbo's pipeline (<code>db:generate → build</code>) replaces manual chaining. Vercel runs the root <code>build</code> script which Turbo orchestrates.</p>
+
+    <h3>5.3 Environment Variables</h3>
+    <table>
+      <thead><tr><th>Variable</th><th>Used by</th><th>Where to set</th></tr></thead>
+      <tbody>
+        <tr><td><code>DATABASE_URL</code></td><td>packages/database, apps/web</td><td>Vercel dashboard (web project) + packages/database .env</td></tr>
+        <tr><td><code>JWT_SECRET</code></td><td>packages/auth, apps/web</td><td>Vercel dashboard</td></tr>
+        <tr><td><code>OPENAI_API_KEY</code></td><td>apps/web only</td><td>Vercel dashboard</td></tr>
+        <tr><td><code>CRON_SECRET</code></td><td>apps/web only</td><td>Vercel dashboard</td></tr>
+        <tr><td><code>EXPO_PUBLIC_API_URL</code></td><td>apps/mobile only</td><td>EAS Secrets / .env.local</td></tr>
+      </tbody>
+    </table>
+
+    <h3>5.4 Next.js Middleware (proxy.ts)</h3>
+    <p>Your <code>proxy.ts</code> file is actually a Next.js middleware (it should be named <code>middleware.ts</code> at the app root for proper Next.js detection). After migration it lives at <code>apps/web/middleware.ts</code>. The auth logic can be imported from <code>@daily-tracker/auth</code>, but the middleware wrapper stays in the web app.</p>
+
+    <h3>5.5 Docker Build</h3>
+    <p>Your Dockerfile uses <code>output: 'standalone'</code> for minimal image size. In the monorepo, the Dockerfile moves to <code>apps/web/Dockerfile</code>. The build context must be the <strong>repo root</strong> (not <code>apps/web/</code>) so Docker can access workspace packages. Update <code>COPY</code> statements to include <code>packages/</code> directories.</p>
+
+    <h3>5.6 shadcn/ui CLI (components.json)</h3>
+    <p>The shadcn CLI reads <code>components.json</code> to know where to write components. After moving to <code>apps/web/</code>, always run the CLI from <code>apps/web/</code>, not the repo root. The alias paths in <code>components.json</code> remain relative to <code>apps/web/</code> so no changes needed inside the file.</p>
+
+    <h3>5.7 Vercel Cron Job</h3>
+    <p>The <code>vercel.json</code> with your daily cron at <code>0 0 * * *</code> moves into <code>apps/web/vercel.json</code>. Vercel detects it automatically when the project's root directory is set to <code>apps/web</code>. <strong>Zero changes required</strong> to the cron configuration itself.</p>
+  </section>
+
+  <!-- ─── 6. Vercel Free Tier ──────────────────────────────── -->
+  <section>
+    <h2><span class="num">6</span> Vercel Free Tier — Full Compatibility</h2>
+
+    <table>
+      <thead><tr><th>Feature</th><th>Free (Hobby)</th><th>Your Use Case</th></tr></thead>
+      <tbody>
+        <tr><td>Turborepo / monorepo support</td><td><span class="badge badge-green">Yes</span></td><td>First-class — Vercel built Turborepo</td></tr>
+        <tr><td>Multiple Vercel projects from one repo</td><td><span class="badge badge-green">Yes</span></td><td>apps/web + future apps/api = 2 projects</td></tr>
+        <tr><td>Cron jobs</td><td><span class="badge badge-green">Yes</span></td><td>Daily 00:00 cron is within limits</td></tr>
+        <tr><td>Bandwidth</td><td>100 GB/month</td><td>Personal app — no concern</td></tr>
+        <tr><td>Serverless function execution</td><td>100 GB-hours/month</td><td>Personal app — no concern</td></tr>
+        <tr><td>Remote cache (Turbo)</td><td><span class="badge badge-green">Free</span></td><td>Run <code>turbo login</code> + <code>turbo link</code></td></tr>
+        <tr><td>Build minutes</td><td>Unlimited (personal)</td><td>No issue</td></tr>
+        <tr><td>Vercel Postgres / KV / Blob</td><td>Paid add-on</td><td>Keep your own Postgres — not affected</td></tr>
+        <tr><td>Team collaboration</td><td>1 member</td><td>Solo project — no issue</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box">
+      <strong>Remote Cache Setup (one time):</strong><br/>
+      <code>npx turbo login</code> → authenticate with Vercel account.<br/>
+      <code>npx turbo link</code> → link repo to Vercel remote cache.<br/>
+      All subsequent builds skip unchanged packages automatically — on your machine and in CI.
+    </div>
+  </section>
+
+  <!-- ─── 7. Impact Assessment ─────────────────────────────── -->
+  <section>
+    <h2><span class="num">7</span> Impact Assessment</h2>
+
+    <table>
+      <thead><tr><th>Area</th><th>Impact Level</th><th>Risk</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>File / directory structure</td><td>High</td><td><span class="badge badge-yellow">Medium</span></td><td>Everything moves — use git mv to preserve history</td></tr>
+        <tr><td>Import paths (<code>@/*</code>)</td><td>High</td><td><span class="badge badge-green">Low</span></td><td>Find-and-replace in apps/web after move; tsconfig alias stays</td></tr>
+        <tr><td>Prisma client setup</td><td>Medium</td><td><span class="badge badge-red">High</span></td><td>Output path change is finicky — test locally first</td></tr>
+        <tr><td>Package dependencies</td><td>High</td><td><span class="badge badge-yellow">Medium</span></td><td>Split across workspace; workspace:* protocol handles linking</td></tr>
+        <tr><td>Vercel deployment config</td><td>Low</td><td><span class="badge badge-green">Low</span></td><td>One setting change in dashboard (Root Directory)</td></tr>
+        <tr><td>Docker builds</td><td>Medium</td><td><span class="badge badge-green">Low</span></td><td>COPY paths change; build context becomes repo root</td></tr>
+        <tr><td>CI/CD</td><td>None</td><td><span class="badge badge-green">Low</span></td><td>No existing CI to break; add GitHub Actions later</td></tr>
+        <tr><td>Developer workflow</td><td>Low</td><td><span class="badge badge-green">Low</span></td><td><code>pnpm dev</code> from root starts all apps</td></tr>
+        <tr><td>Production behavior</td><td>None</td><td><span class="badge badge-green">Low</span></td><td>Zero runtime changes — restructure only</td></tr>
+        <tr><td>Mobile app (net new)</td><td>High</td><td><span class="badge badge-yellow">Medium</span></td><td>New codebase, separate from migration risk</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ─── 8. Migration Sequence ────────────────────────────── -->
+  <section>
+    <h2><span class="num">8</span> Recommended Migration Sequence</h2>
+
+    <ul class="timeline">
+      <li>
+        <div class="tl-dot tl-dot-1">W1</div>
+        <div class="tl-body">
+          <h4>Week 1 — Restructure Only (zero behavior change)</h4>
+          <ul>
+            <li>Migrate npm → pnpm (<code>corepack enable pnpm</code>, <code>pnpm import</code>)</li>
+            <li>Create <code>apps/web/</code>, move all current files using <code>git mv</code></li>
+            <li>Add <code>turbo.json</code>, <code>pnpm-workspace.yaml</code>, root <code>package.json</code></li>
+            <li>Update Vercel Root Directory to <code>apps/web</code></li>
+            <li><strong>Gate:</strong> Production deploy succeeds. All pages and cron functional.</li>
+          </ul>
+        </div>
+      </li>
+      <li>
+        <div class="tl-dot tl-dot-2">W2</div>
+        <div class="tl-body">
+          <h4>Week 2 — Extract Shared Packages</h4>
+          <ul>
+            <li>Create <code>packages/database</code> — move Prisma, test locally first</li>
+            <li>Create <code>packages/types</code> — move shared interfaces</li>
+            <li>Create <code>packages/auth</code> — move JWT helpers</li>
+            <li>Create <code>packages/config</code> — extract tsconfig and ESLint bases</li>
+            <li>Update all imports in <code>apps/web</code></li>
+            <li><strong>Gate:</strong> <code>pnpm build</code> from root succeeds. Vercel deploys cleanly.</li>
+          </ul>
+        </div>
+      </li>
+      <li>
+        <div class="tl-dot tl-dot-3">W3+</div>
+        <div class="tl-body">
+          <h4>Week 3+ — Mobile App (apps/mobile)</h4>
+          <ul>
+            <li>Scaffold Expo app with TypeScript + Expo Router</li>
+            <li>Install NativeWind for Tailwind-style styling</li>
+            <li>Wire <code>@daily-tracker/types</code> and <code>@daily-tracker/auth</code></li>
+            <li>Build API client (<code>EXPO_PUBLIC_API_URL</code> → Vercel deployment)</li>
+            <li>Implement auth flow with <code>expo-secure-store</code></li>
+            <li>Configure EAS Build for iOS/Android CI</li>
+          </ul>
+        </div>
+      </li>
+      <li>
+        <div class="tl-dot tl-dot-4">?</div>
+        <div class="tl-body">
+          <h4>Optional Later — Dedicated Backend (apps/api)</h4>
+          <ul>
+            <li>Only if Next.js API routes become a bottleneck</li>
+            <li>Hono server using existing route logic</li>
+            <li>Deploy as separate Vercel project or Railway</li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ─── 9. Recommendation ────────────────────────────────── -->
+  <section>
+    <h2><span class="num">9</span> Final Recommendation</h2>
+
+    <div class="rec-box">
+      <strong>Do Phase 1 + Phase 2 now.</strong> The repo restructure and shared packages have zero risk to production behavior and lay a solid foundation. The Vercel free tier fully supports Turborepo with remote caching at no extra cost.
+      <br/><br/>
+      <strong>Hold Phase 3 (mobile) until Phase 2 is stable.</strong> Rushing a mobile app into an unstable monorepo structure is the most common failure mode.
+      <br/><br/>
+      <strong>Skip Phase 4 (apps/api) entirely for now.</strong> Your Next.js API routes are perfectly capable of serving both web and mobile. A separate Hono backend is premature overhead without a concrete reason.
+    </div>
+
+    <h3>Biggest Risk</h3>
+    <p><strong>Prisma client generation in a shared package.</strong> The output path configuration in <code>schema.prisma</code> is the most error-prone step. Always test <code>pnpm --filter @daily-tracker/database build</code> locally before pushing to Vercel.</p>
+
+    <h3>Lowest Risk</h3>
+    <p><strong>Vercel deployment.</strong> Vercel built and actively maintains Turborepo. The integration is first-class. Free tier is fully supported. Remote caching is free.</p>
+  </section>
+
+  <!-- ─── Footer ───────────────────────────────────────────── -->
+  <div class="footer">
+    <span>Daily Tracker — Turborepo Migration Plan</span>
+    <span>Generated March 2026</span>
+  </div>
+
+</div>
+
+</body>
+</html>
