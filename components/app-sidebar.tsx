@@ -48,11 +48,6 @@ const navGroups = [
     label: "Expenses",
     items: [
       {
-        title: "Assets",
-        url: "/assets",
-        icon: WalletIcon
-      },
-      {
         title: "Expenses Tracker",
         url: "/expense-tracker",
         icon: IndianRupeeIcon

@@ -55,6 +55,9 @@ const RecurringExpensesPage = () => {
   const [togglingId, setTogglingId] = useState<number | null>(null);
   const [categoryOptions, setCategoryOptions] = useState<CategoryOption[]>([]);
   const [isCategoriesLoading, setIsCategoriesLoading] = useState(false);
+  const [editingExpense, setEditingExpense] = useState<RecurringExpense | null>(
+    null
+  );
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -137,6 +140,7 @@ const RecurringExpensesPage = () => {
       if (!res.ok) throw new Error();
       const { data: updated } = await res.json();
       setData((prev) => prev.map((r) => (r.id === id ? updated : r)));
+      setEditingExpense(null);
       toast.success("Recurring expense updated");
     } catch {
       toast.error("Failed to update recurring expense");
@@ -208,7 +212,10 @@ const RecurringExpensesPage = () => {
         header: "Frequency",
         cell: ({ getValue }) => (
           <span className="flex items-center gap-1.5 text-sm">
-            <RepeatIcon className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
+            <RepeatIcon
+              className="h-3.5 w-3.5 text-muted-foreground"
+              aria-hidden="true"
+            />
             {FREQUENCY_LABELS[getValue() as keyof typeof FREQUENCY_LABELS]}
           </span>
         )
@@ -238,38 +245,24 @@ const RecurringExpensesPage = () => {
           return (
             <div className="flex items-center gap-2">
               {/* Edit */}
-              <Dialog modal={true}>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon-sm"
-                    aria-label={`Edit ${rec.expense_title}`}
-                    onClick={fetchCategories}
-                  >
-                    <Edit2Icon className="h-4 w-4" aria-hidden="true" />
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Edit Recurring Expense</DialogTitle>
-                  </DialogHeader>
-                  <RecurringExpenseForm
-                    data={rec}
-                    handleSubmit={(formData) => handleEdit(rec.id, formData)}
-                    loading={submitting}
-                    mode="edit"
-                    categoryOptions={categoryOptions}
-                    isCategoriesLoading={isCategoriesLoading}
-                    onCategoryCreated={handleCategoryCreated}
-                  />
-                </DialogContent>
-              </Dialog>
+              <Button
+                variant="outline"
+                size="icon-sm"
+                aria-label={`Edit ${rec.expense_title}`}
+                onClick={() => setEditingExpense(rec)}
+              >
+                <Edit2Icon className="h-4 w-4" aria-hidden="true" />
+              </Button>
 
               {/* Pause / Resume */}
               <Button
                 variant="outline"
                 size="icon-sm"
-                aria-label={rec.is_active ? `Pause ${rec.expense_title}` : `Resume ${rec.expense_title}`}
+                aria-label={
+                  rec.is_active
+                    ? `Pause ${rec.expense_title}`
+                    : `Resume ${rec.expense_title}`
+                }
                 disabled={togglingId === rec.id}
                 onClick={() => handleToggle(rec.id, rec.is_active)}
               >
@@ -295,10 +288,13 @@ const RecurringExpensesPage = () => {
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Delete recurring expense?</AlertDialogTitle>
+                    <AlertDialogTitle>
+                      Delete recurring expense?
+                    </AlertDialogTitle>
                     <AlertDialogDescription>
-                      This will stop future auto-entries for &ldquo;{rec.expense_title}&rdquo;.
-                      Past expenses already created will remain.
+                      This will stop future auto-entries for &ldquo;
+                      {rec.expense_title}&rdquo;. Past expenses already created
+                      will remain.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -307,7 +303,8 @@ const RecurringExpensesPage = () => {
                       onClick={() => handleDelete(rec.id)}
                       className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     >
-                      Delete {deletingId === rec.id && <Spinner className="ml-2" />}
+                      Delete{" "}
+                      {deletingId === rec.id && <Spinner className="ml-2" />}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -317,7 +314,7 @@ const RecurringExpensesPage = () => {
         }
       }
     ],
-    [submitting, togglingId, deletingId, categoryOptions, isCategoriesLoading]
+    [togglingId, deletingId]
   );
 
   return (
@@ -356,6 +353,32 @@ const RecurringExpensesPage = () => {
           loading={loading}
         />
       </div>
+
+      <Dialog
+        open={editingExpense !== null}
+        onOpenChange={(open) => {
+          if (!open) setEditingExpense(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Recurring Expense</DialogTitle>
+          </DialogHeader>
+          {editingExpense && (
+            <RecurringExpenseForm
+              data={editingExpense}
+              handleSubmit={(formData) =>
+                handleEdit(editingExpense.id, formData)
+              }
+              loading={submitting}
+              mode="edit"
+              categoryOptions={categoryOptions}
+              isCategoriesLoading={isCategoriesLoading}
+              onCategoryCreated={handleCategoryCreated}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
