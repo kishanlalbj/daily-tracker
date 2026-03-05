@@ -1,5 +1,12 @@
 import { addDays, addMonths, addYears, startOfDay } from "date-fns";
 
+/** Parse a YYYY-MM-DD string as local midnight. Avoids the UTC offset shift
+ *  that `new Date("YYYY-MM-DD")` causes on UTC+ servers. */
+export function parseDateLocal(dateStr: string): Date {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
 export type Frequency = "daily" | "weekly" | "biweekly" | "monthly" | "yearly";
 
 export function advanceByFrequency(date: Date, frequency: Frequency): Date {

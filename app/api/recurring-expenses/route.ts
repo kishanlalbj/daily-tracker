@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { computeNextRunDate } from "@/lib/recurring-utils";
+import { computeNextRunDate, parseDateLocal } from "@/lib/recurring-utils";
 import type { Frequency } from "@/lib/recurring-utils";
 
 export async function GET(req: NextRequest) {
@@ -31,15 +31,16 @@ export async function POST(req: NextRequest) {
       await req.json();
     const userId = req.headers.get("x-user-id");
 
-    const nextRunDate = computeNextRunDate(new Date(start_date), frequency as Frequency);
+    const startDateLocal = parseDateLocal(start_date);
+    const nextRunDate = computeNextRunDate(startDateLocal, frequency as Frequency);
 
     const recurring = await prisma.recurringExpense.create({
       data: {
         expense_title,
         amount,
         frequency,
-        start_date: new Date(start_date),
-        end_date: end_date ? new Date(end_date) : null,
+        start_date: startDateLocal,
+        end_date: end_date ? parseDateLocal(end_date) : null,
         next_run_date: nextRunDate,
         categoryId: category,
         userId: Number(userId)
