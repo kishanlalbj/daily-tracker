@@ -110,13 +110,22 @@ const RecurringExpensesPage = () => {
     setCategoryOptions((prev) => [...prev, opt]);
   };
 
+  const serializeDates = (formData: unknown) => {
+    const fd = formData as { start_date: Date; end_date?: Date; [key: string]: unknown };
+    return {
+      ...fd,
+      start_date: format(fd.start_date, "yyyy-MM-dd"),
+      end_date: fd.end_date ? format(fd.end_date, "yyyy-MM-dd") : undefined
+    };
+  };
+
   const handleAdd = async (formData: unknown) => {
     try {
       setSubmitting(true);
       const res = await fetch(paths.RECURRING_EXPENSE_API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(serializeDates(formData))
       });
       if (!res.ok) throw new Error();
       const { data: created } = await res.json();
@@ -135,7 +144,7 @@ const RecurringExpensesPage = () => {
       const res = await fetch(`${paths.RECURRING_EXPENSE_API}/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(serializeDates(formData))
       });
       if (!res.ok) throw new Error();
       const { data: updated } = await res.json();
