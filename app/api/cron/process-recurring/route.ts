@@ -4,7 +4,7 @@ import { advanceByFrequency } from "@/lib/recurring-utils";
 import type { Frequency } from "@/lib/recurring-utils";
 import { startOfDay } from "date-fns";
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
   const secret = req.headers.get("authorization");
   if (secret !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
