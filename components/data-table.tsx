@@ -40,7 +40,9 @@ type DataTableProps<TData> = {
   title: string;
   loading?: boolean;
   toolbar?: ReactNode;
+  action?: ReactNode;
   columnFilters?: ColumnFiltersState;
+  className?: string;
 };
 
 export function DataTable<TData>({
@@ -50,7 +52,9 @@ export function DataTable<TData>({
   pageSize = 10,
   loading,
   toolbar,
-  columnFilters
+  action,
+  columnFilters,
+  className
 }: DataTableProps<TData>) {
   "use no memo";
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -83,12 +87,13 @@ export function DataTable<TData>({
   const lastRow = Math.min((pageIndex + 1) * currentPageSize, totalRows);
 
   return (
-    <Card>
+    <Card className={className}>
       <CardHeader>
-        <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between gap-2">
           <CardTitle>{title}</CardTitle>
-          {toolbar}
+          {action}
         </div>
+        {toolbar && <div className="mt-3">{toolbar}</div>}
       </CardHeader>
       <CardContent className="p-0">
         <div className="overflow-hidden rounded-b-xl border-t">
@@ -109,13 +114,20 @@ export function DataTable<TData>({
                           onClick={h.column.getToggleSortingHandler()}
                           aria-label={`Sort by ${h.column.id}`}
                         >
-                          {flexRender(h.column.columnDef.header, h.getContext())}
+                          {flexRender(
+                            h.column.columnDef.header,
+                            h.getContext()
+                          )}
                           {h.column.getIsSorted() === "asc" ? (
                             <ArrowUp size={12} aria-hidden="true" />
                           ) : h.column.getIsSorted() === "desc" ? (
                             <ArrowDown size={12} aria-hidden="true" />
                           ) : (
-                            <ArrowUpDown size={12} className="opacity-40" aria-hidden="true" />
+                            <ArrowUpDown
+                              size={12}
+                              className="opacity-40"
+                              aria-hidden="true"
+                            />
                           )}
                         </button>
                       ) : (
@@ -146,7 +158,10 @@ export function DataTable<TData>({
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id} className="px-4 py-3 text-sm">
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
                       </TableCell>
                     ))}
                   </TableRow>
@@ -158,7 +173,10 @@ export function DataTable<TData>({
                     className="h-32 text-center"
                   >
                     <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                      <InboxIcon className="h-8 w-8 opacity-40" aria-hidden="true" />
+                      <InboxIcon
+                        className="h-8 w-8 opacity-40"
+                        aria-hidden="true"
+                      />
                       <span className="text-sm">No results found</span>
                     </div>
                   </TableCell>
@@ -177,7 +195,9 @@ export function DataTable<TData>({
 
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">Rows per page</span>
+              <span className="text-xs text-muted-foreground">
+                Rows per page
+              </span>
               <Select
                 value={String(currentPageSize)}
                 onValueChange={(val) => table.setPageSize(Number(val))}
@@ -187,7 +207,11 @@ export function DataTable<TData>({
                 </SelectTrigger>
                 <SelectContent>
                   {[10, 20, 30, 50].map((size) => (
-                    <SelectItem key={size} value={String(size)} className="text-xs">
+                    <SelectItem
+                      key={size}
+                      value={String(size)}
+                      className="text-xs"
+                    >
                       {size}
                     </SelectItem>
                   ))}

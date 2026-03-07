@@ -101,7 +101,8 @@ const ExpenseTrackerPage = () => {
   const [categoryFilter, setCategoryFilter] = useState<string>("");
 
   const uniqueCategories = useMemo(
-    () => [...new Set(data.map((e) => e.category?.title).filter(Boolean))].sort(),
+    () =>
+      [...new Set(data.map((e) => e.category?.title).filter(Boolean))].sort(),
     [data]
   );
 
@@ -290,7 +291,11 @@ const ExpenseTrackerPage = () => {
       {
         accessorKey: "amount",
         header: "Amount",
-        cell: ({ getValue }) => `- ${formatCurrency(getValue() as number)}`
+        cell: ({ getValue }) => (
+          <p className="tabular-nums text-destructive font-medium">
+            - ${formatCurrency(getValue() as number)}
+          </p>
+        )
       },
       {
         accessorKey: "Actions",
@@ -400,7 +405,9 @@ const ExpenseTrackerPage = () => {
                 <Button
                   variant={!categoryFilter ? "secondary" : "ghost"}
                   size="sm"
-                  className={!categoryFilter ? "border border-foreground/30" : ""}
+                  className={
+                    !categoryFilter ? "border border-foreground/30" : ""
+                  }
                   onClick={() => setCategoryFilter("")}
                 >
                   All
@@ -410,8 +417,14 @@ const ExpenseTrackerPage = () => {
                     key={cat}
                     variant={categoryFilter === cat ? "secondary" : "ghost"}
                     size="sm"
-                    className={categoryFilter === cat ? "border border-foreground/30" : ""}
-                    onClick={() => setCategoryFilter(categoryFilter === cat ? "" : cat)}
+                    className={
+                      categoryFilter === cat
+                        ? "border border-foreground/30"
+                        : ""
+                    }
+                    onClick={() =>
+                      setCategoryFilter(categoryFilter === cat ? "" : cat)
+                    }
                   >
                     {cat}
                   </Button>

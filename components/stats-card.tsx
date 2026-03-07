@@ -52,7 +52,7 @@ const StatsCard = ({
     <Card>
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-2">
-          <p className="text-sm font-medium text-muted-foreground leading-tight">
+          <p className="text-sm font-medium text-primary leading-tight">
             {title}
           </p>
           {Icon && (

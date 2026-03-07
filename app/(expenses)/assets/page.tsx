@@ -2,7 +2,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { Edit2Icon, PlusIcon, TrashIcon, TrendingUpIcon, TrendingDownIcon, MinusIcon } from "lucide-react";
+import {
+  Edit2Icon,
+  PlusIcon,
+  TrashIcon,
+  TrendingUpIcon,
+  TrendingDownIcon,
+  MinusIcon
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { DataTable } from "@/components/data-table";
@@ -31,7 +38,6 @@ import {
   AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
 import { Spinner } from "@/components/ui/spinner";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { paths } from "@/constants";
 import { formatCurrency } from "@/lib/dashboard-helpers";
@@ -57,9 +63,14 @@ const AssetPage = () => {
   const [liabilities, setLiabilities] = useState<Liability[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [deletingId, setDeletingId] = useState<{ type: "asset" | "liability"; id: number } | null>(null);
+  const [deletingId, setDeletingId] = useState<{
+    type: "asset" | "liability";
+    id: number;
+  } | null>(null);
   const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
-  const [editingLiability, setEditingLiability] = useState<Liability | null>(null);
+  const [editingLiability, setEditingLiability] = useState<Liability | null>(
+    null
+  );
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -141,7 +152,9 @@ const AssetPage = () => {
   const handleDeleteAsset = async (id: number) => {
     try {
       setDeletingId({ type: "asset", id });
-      const res = await fetch(`${paths.ASSETS_API}/${id}`, { method: "DELETE" });
+      const res = await fetch(`${paths.ASSETS_API}/${id}`, {
+        method: "DELETE"
+      });
       if (!res.ok) throw new Error();
       setAssets((prev) => prev.filter((a) => a.id !== id));
       toast.success("Asset deleted");
@@ -194,7 +207,9 @@ const AssetPage = () => {
   const handleDeleteLiability = async (id: number) => {
     try {
       setDeletingId({ type: "liability", id });
-      const res = await fetch(`${paths.LIABILITIES_API}/${id}`, { method: "DELETE" });
+      const res = await fetch(`${paths.LIABILITIES_API}/${id}`, {
+        method: "DELETE"
+      });
       if (!res.ok) throw new Error();
       setLiabilities((prev) => prev.filter((l) => l.id !== id));
       toast.success("Liability deleted");
@@ -248,7 +263,11 @@ const AssetPage = () => {
               </Button>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive" size="icon-sm" aria-label={`Delete ${asset.title}`}>
+                  <Button
+                    variant="destructive"
+                    size="icon-sm"
+                    aria-label={`Delete ${asset.title}`}
+                  >
                     <TrashIcon className="h-4 w-4" aria-hidden="true" />
                   </Button>
                 </AlertDialogTrigger>
@@ -256,7 +275,8 @@ const AssetPage = () => {
                   <AlertDialogHeader>
                     <AlertDialogTitle>Delete asset?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This will permanently remove &ldquo;{asset.title}&rdquo; from your assets.
+                      This will permanently remove &ldquo;{asset.title}&rdquo;
+                      from your assets.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -266,9 +286,10 @@ const AssetPage = () => {
                       className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     >
                       Delete{" "}
-                      {deletingId?.type === "asset" && deletingId.id === asset.id && (
-                        <Spinner className="ml-2" />
-                      )}
+                      {deletingId?.type === "asset" &&
+                        deletingId.id === asset.id && (
+                          <Spinner className="ml-2" />
+                        )}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -289,7 +310,8 @@ const AssetPage = () => {
         header: "Type",
         cell: ({ getValue }) => (
           <Badge variant="secondary">
-            {LIABILITY_TYPE_LABELS[getValue() as string] ?? (getValue() as string)}
+            {LIABILITY_TYPE_LABELS[getValue() as string] ??
+              (getValue() as string)}
           </Badge>
         )
       },
@@ -319,7 +341,11 @@ const AssetPage = () => {
               </Button>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive" size="icon-sm" aria-label={`Delete ${liability.title}`}>
+                  <Button
+                    variant="destructive"
+                    size="icon-sm"
+                    aria-label={`Delete ${liability.title}`}
+                  >
                     <TrashIcon className="h-4 w-4" aria-hidden="true" />
                   </Button>
                 </AlertDialogTrigger>
@@ -327,7 +353,8 @@ const AssetPage = () => {
                   <AlertDialogHeader>
                     <AlertDialogTitle>Delete liability?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This will permanently remove &ldquo;{liability.title}&rdquo; from your liabilities.
+                      This will permanently remove &ldquo;{liability.title}
+                      &rdquo; from your liabilities.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -337,9 +364,10 @@ const AssetPage = () => {
                       className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     >
                       Delete{" "}
-                      {deletingId?.type === "liability" && deletingId.id === liability.id && (
-                        <Spinner className="ml-2" />
-                      )}
+                      {deletingId?.type === "liability" &&
+                        deletingId.id === liability.id && (
+                          <Spinner className="ml-2" />
+                        )}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -352,7 +380,8 @@ const AssetPage = () => {
     [deletingId]
   );
 
-  const NetWorthIcon = netWorth > 0 ? TrendingUpIcon : netWorth < 0 ? TrendingDownIcon : MinusIcon;
+  const NetWorthIcon =
+    netWorth > 0 ? TrendingUpIcon : netWorth < 0 ? TrendingDownIcon : MinusIcon;
 
   return (
     <div className="px-4 py-6 md:px-6 md:py-8 max-w-6xl mx-auto flex flex-col gap-6">
@@ -379,66 +408,71 @@ const AssetPage = () => {
           title="Net Worth"
           value={formatCurrency(netWorth)}
           icon={NetWorthIcon}
-          subtitle={netWorth >= 0 ? "Assets exceed liabilities" : "Liabilities exceed assets"}
+          subtitle={
+            netWorth >= 0
+              ? "Assets exceed liabilities"
+              : "Liabilities exceed assets"
+          }
         />
       </div>
 
       {/* Assets table */}
-      <Card>
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle>Assets</CardTitle>
-            <Dialog modal={true}>
-              <DialogTrigger asChild>
-                <Button variant="default" size="sm">
-                  <PlusIcon aria-hidden="true" />
-                  Add Asset
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Add Asset</DialogTitle>
-                </DialogHeader>
-                <AssetForm handleSubmit={handleAddAsset} loading={submitting} />
-              </DialogContent>
-            </Dialog>
-          </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          <DataTable columns={assetColumns} data={assets} loading={loading} title="Assets" />
-        </CardContent>
-      </Card>
+      <DataTable
+        columns={assetColumns}
+        data={assets}
+        loading={loading}
+        title="Assets"
+        action={
+          <Dialog modal={true}>
+            <DialogTrigger asChild>
+              <Button variant="default" size="sm">
+                <PlusIcon aria-hidden="true" />
+                Add Asset
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add Asset</DialogTitle>
+              </DialogHeader>
+              <AssetForm handleSubmit={handleAddAsset} loading={submitting} />
+            </DialogContent>
+          </Dialog>
+        }
+      />
 
       {/* Liabilities table */}
-      <Card>
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle>Liabilities</CardTitle>
-            <Dialog modal={true}>
-              <DialogTrigger asChild>
-                <Button variant="default" size="sm">
-                  <PlusIcon aria-hidden="true" />
-                  Add Liability
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Add Liability</DialogTitle>
-                </DialogHeader>
-                <LiabilityForm handleSubmit={handleAddLiability} loading={submitting} />
-              </DialogContent>
-            </Dialog>
-          </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          <DataTable columns={liabilityColumns} data={liabilities} loading={loading} title="Liabilities" />
-        </CardContent>
-      </Card>
+      <DataTable
+        columns={liabilityColumns}
+        data={liabilities}
+        loading={loading}
+        title="Liabilities"
+        action={
+          <Dialog modal={true}>
+            <DialogTrigger asChild>
+              <Button variant="default" size="sm">
+                <PlusIcon aria-hidden="true" />
+                Add Liability
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add Liability</DialogTitle>
+              </DialogHeader>
+              <LiabilityForm
+                handleSubmit={handleAddLiability}
+                loading={submitting}
+              />
+            </DialogContent>
+          </Dialog>
+        }
+      />
 
       {/* Edit Asset Dialog */}
       <Dialog
         open={editingAsset !== null}
-        onOpenChange={(open) => { if (!open) setEditingAsset(null); }}
+        onOpenChange={(open) => {
+          if (!open) setEditingAsset(null);
+        }}
       >
         <DialogContent>
           <DialogHeader>
@@ -447,7 +481,9 @@ const AssetPage = () => {
           {editingAsset && (
             <AssetForm
               data={editingAsset}
-              handleSubmit={(formData) => handleEditAsset(editingAsset.id, formData)}
+              handleSubmit={(formData) =>
+                handleEditAsset(editingAsset.id, formData)
+              }
               loading={submitting}
               mode="edit"
             />
@@ -458,7 +494,9 @@ const AssetPage = () => {
       {/* Edit Liability Dialog */}
       <Dialog
         open={editingLiability !== null}
-        onOpenChange={(open) => { if (!open) setEditingLiability(null); }}
+        onOpenChange={(open) => {
+          if (!open) setEditingLiability(null);
+        }}
       >
         <DialogContent>
           <DialogHeader>
@@ -467,7 +505,9 @@ const AssetPage = () => {
           {editingLiability && (
             <LiabilityForm
               data={editingLiability}
-              handleSubmit={(formData) => handleEditLiability(editingLiability.id, formData)}
+              handleSubmit={(formData) =>
+                handleEditLiability(editingLiability.id, formData)
+              }
               loading={submitting}
               mode="edit"
             />
