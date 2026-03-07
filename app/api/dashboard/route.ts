@@ -49,7 +49,9 @@ export async function GET(req: NextRequest) {
       allExpenses,
       recentTransactions,
       previousPeriodExpense,
-      investmentExpenses
+      investmentExpenses,
+      totalIncomeData,
+      previousPeriodIncomeData
     ] = await Promise.all([
       // Health data
       prisma.healthTracker.findMany({
@@ -128,6 +130,22 @@ export async function GET(req: NextRequest) {
           category: investmentFilter
         },
         _sum: { amount: true }
+      }),
+
+      // Total income for current period
+      prisma.income.aggregate({
+        where: { userId, date: dateFilter, user: { is_deleted: false } },
+        _sum: { amount: true }
+      }),
+
+      // Total income for previous period (for trend comparison)
+      prisma.income.aggregate({
+        where: {
+          userId,
+          user: { is_deleted: false },
+          date: { gte: previousFromDate, lt: fromDate }
+        },
+        _sum: { amount: true }
       })
     ]);
 
@@ -156,6 +174,22 @@ export async function GET(req: NextRequest) {
     });
 
     const totalInvestments = Number(investmentExpenses._sum.amount || 0);
+    const totalIncome = Number(totalIncomeData._sum.amount || 0);
+    const previousIncome = Number(previousPeriodIncomeData._sum.amount || 0);
+
+    const incomeChange =
+      previousIncome > 0
+        ? Number((((totalIncome - previousIncome) / previousIncome) * 100).toFixed(2))
+        : 0;
+
+    let incomeDirection: "up" | "down" | "stable" = "stable";
+    if (previousIncome > 0) {
+      if (totalIncome > previousIncome * 1.01) incomeDirection = "up";
+      else if (totalIncome < previousIncome * 0.99) incomeDirection = "down";
+    }
+
+    const netSavings = totalIncome - totalAmount - totalInvestments;
+    const savingsRate = totalIncome > 0 ? Number(((netSavings / totalIncome) * 100).toFixed(2)) : 0;
 
     const investmentCategoryIds = new Set(
       categories
@@ -245,7 +279,14 @@ export async function GET(req: NextRequest) {
           topSpendingCategory,
           categoryBreakdown,
           recentTransactions
-        }
+        },
+        income: {
+          total: totalIncome,
+          changeFromPreviousPeriod: incomeChange,
+          direction: incomeDirection
+        },
+        netSavings,
+        savingsRate
       }
     });
   } catch (error) {

@@ -31,6 +31,29 @@ enum Frequency {
   yearly
 }
 
+enum IncomeSource {
+  salary
+  freelance
+  rental
+  business
+  other
+}
+
+enum AssetType {
+  cash
+  property
+  stocks
+  vehicle
+  other
+}
+
+enum LiabilityType {
+  loan
+  credit_card
+  mortgage
+  other
+}
+
 model User {
   id Int @id @default(autoincrement())
   first_name String
@@ -49,6 +72,12 @@ model User {
   healthTrackers     HealthTracker[]
   expenseTrackers    ExpenseTracker[]
   recurringExpenses  RecurringExpense[]
+  recurringIncomes   RecurringIncome[]
+  incomes            Income[]
+  budgetLimits       BudgetLimit[]
+  financialGoals     FinancialGoal[]
+  assets             Asset[]
+  liabilities        Liability[]
 }
 
 model HealthTracker {
@@ -105,4 +134,79 @@ model Category {
 
   expense_trackers   ExpenseTracker[]
   recurringExpenses  RecurringExpense[]
+  budgetLimits       BudgetLimit[]
+}
+
+model RecurringIncome {
+  id             Int          @id @default(autoincrement())
+  title          String
+  amount         Decimal      @db.Decimal
+  source         IncomeSource
+  frequency      Frequency
+  start_date     DateTime
+  end_date       DateTime?
+  next_run_date  DateTime
+  last_run_date  DateTime?
+  is_active      Boolean      @default(true)
+  userId         Int
+  user           User         @relation(fields: [userId], references: [id])
+  created_at     DateTime     @default(now())
+  incomes        Income[]
+}
+
+model Income {
+  id                Int              @id @default(autoincrement())
+  date              DateTime
+  title             String
+  amount            Decimal          @db.Decimal
+  source            IncomeSource
+  userId            Int
+  user              User             @relation(fields: [userId], references: [id])
+  recurringIncomeId Int?
+  recurringIncome   RecurringIncome? @relation(fields: [recurringIncomeId], references: [id])
+  created_at        DateTime         @default(now())
+}
+
+model BudgetLimit {
+  id         Int      @id @default(autoincrement())
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id])
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  amount     Decimal  @db.Decimal
+  created_at DateTime @default(now())
+
+  @@unique([userId, categoryId])
+}
+
+model FinancialGoal {
+  id            Int      @id @default(autoincrement())
+  title         String
+  target_amount Decimal  @db.Decimal
+  target_date   DateTime
+  is_achieved   Boolean  @default(false)
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id])
+  created_at    DateTime @default(now())
+}
+
+model Asset {
+  id         Int       @id @default(autoincrement())
+  title      String
+  value      Decimal   @db.Decimal
+  type       AssetType
+  date       DateTime
+  userId     Int
+  user       User      @relation(fields: [userId], references: [id])
+  created_at DateTime  @default(now())
+}
+
+model Liability {
+  id         Int           @id @default(autoincrement())
+  title      String
+  amount     Decimal       @db.Decimal
+  type       LiabilityType
+  userId     Int
+  user       User          @relation(fields: [userId], references: [id])
+  created_at DateTime      @default(now())
 }

@@ -3,6 +3,7 @@ import {
   GaugeIcon,
   HeartPulseIcon,
   IndianRupeeIcon,
+  LandmarkIcon,
   LogOutIcon,
   MoonIcon,
   RepeatIcon,
@@ -45,6 +46,21 @@ const navGroups = [
     ]
   },
   {
+    label: "Income",
+    items: [
+      {
+        title: "Income Tracker",
+        url: "/income-tracker",
+        icon: TrendingUpIcon
+      },
+      {
+        title: "Recurring Income",
+        url: "/income-tracker/recurring",
+        icon: RepeatIcon
+      }
+    ]
+  },
+  {
     label: "Expenses",
     items: [
       {
@@ -56,6 +72,11 @@ const navGroups = [
         title: "Recurring Expenses",
         url: "/expense-tracker/recurring",
         icon: RepeatIcon
+      },
+      {
+        title: "Assets & Liabilities",
+        url: "/assets",
+        icon: LandmarkIcon
       }
     ]
   },

@@ -21,6 +21,7 @@ import {
   AlertCircleIcon,
   Banknote,
   BarChart3,
+  PiggyBank,
   Scale,
   Tag,
   Target,
@@ -143,8 +144,24 @@ const DashboardPage = () => {
             <Loading />
           ) : (
             <div className="flex flex-col gap-6">
-              {/* Stats row */}
+              {/* Stats row — income + expenses overview */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <StatsCard
+                  title="Total Income"
+                  value={formatCurrency(data?.income?.total)}
+                  icon={TrendingUpIcon}
+                  trend={
+                    data?.income?.direction
+                      ? {
+                          direction: data.income.direction,
+                          change: data.income.changeFromPreviousPeriod,
+                          isPositiveGood: true
+                        }
+                      : undefined
+                  }
+                  subtitle="vs. previous period"
+                />
+
                 <StatsCard
                   title="Total Expenses"
                   value={formatCurrency(data?.expenses?.summary.total)}
@@ -162,6 +179,27 @@ const DashboardPage = () => {
                 />
 
                 <StatsCard
+                  title="Net Savings"
+                  value={formatCurrency(data?.netSavings)}
+                  icon={PiggyBank}
+                  subtitle={
+                    data?.savingsRate !== undefined
+                      ? `${data.savingsRate.toFixed(1)}% savings rate`
+                      : "–"
+                  }
+                />
+
+                <StatsCard
+                  title="Total Investments"
+                  value={formatCurrency(data?.expenses?.totalInvestments)}
+                  icon={Banknote}
+                  subtitle="Across investment categories"
+                />
+              </div>
+
+              {/* Secondary stats row */}
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                <StatsCard
                   title="Avg. per Transaction"
                   value={formatCurrency(data?.expenses?.summary.average)}
                   icon={BarChart3}
@@ -175,13 +213,6 @@ const DashboardPage = () => {
                   subtitle={formatCurrency(
                     data?.expenses?.topSpendingCategory?.total
                   )}
-                />
-
-                <StatsCard
-                  title="Total Investments"
-                  value={formatCurrency(data?.expenses?.totalInvestments)}
-                  icon={Banknote}
-                  subtitle="Across investment categories"
                 />
               </div>
 

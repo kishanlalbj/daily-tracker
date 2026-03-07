@@ -7,7 +7,8 @@ const PUBLIC_PATHS = [
   "/api/auth/register",
   "/api/auth/google",
   "/api/auth/google/callback",
-  "/api/cron/process-recurring"
+  "/api/cron/process-recurring",
+  "/api/cron/process-recurring-income"
 ];
 const AUTH_PATHS = ["/", "/api/auth/login", "/api/auth/register"];
 

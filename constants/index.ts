@@ -10,5 +10,11 @@ export const paths = {
   LOGOUT_API: `${BASE_API_URL}/auth/logout`,
   DASHBOARD_API: `${BASE_API_URL}/dashboard`,
   DELETE_USERS_API: `${BASE_API_URL}/users/delete`,
-  RECURRING_EXPENSE_API: `${BASE_API_URL}/recurring-expenses`
+  RECURRING_EXPENSE_API: `${BASE_API_URL}/recurring-expenses`,
+  RECURRING_INCOME_API: `${BASE_API_URL}/recurring-income`,
+  INCOME_API: `${BASE_API_URL}/income`,
+  BUDGET_API: `${BASE_API_URL}/budget`,
+  GOALS_API: `${BASE_API_URL}/goals`,
+  ASSETS_API: `${BASE_API_URL}/assets`,
+  LIABILITIES_API: `${BASE_API_URL}/liabilities`
 };

@@ -45,6 +45,68 @@ export interface RecurringExpense {
   created_at: string;
 }
 
+export type IncomeSource = "salary" | "freelance" | "rental" | "business" | "other";
+export type AssetType = "cash" | "property" | "stocks" | "vehicle" | "other";
+export type LiabilityType = "loan" | "credit_card" | "mortgage" | "other";
+
+export interface RecurringIncome {
+  id: number;
+  title: string;
+  amount: number;
+  source: IncomeSource;
+  frequency: Frequency;
+  start_date: string;
+  end_date: string | null;
+  next_run_date: string;
+  last_run_date: string | null;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface Income {
+  id: number;
+  date: string;
+  title: string;
+  amount: number;
+  source: IncomeSource;
+  recurringIncomeId: number | null;
+  created_at: string;
+}
+
+export interface BudgetLimit {
+  id: number;
+  categoryId: number;
+  category: { id: number; title: string };
+  amount: number;
+  created_at: string;
+}
+
+export interface FinancialGoal {
+  id: number;
+  title: string;
+  target_amount: number;
+  target_date: string;
+  is_achieved: boolean;
+  created_at: string;
+}
+
+export interface Asset {
+  id: number;
+  title: string;
+  value: number;
+  type: AssetType;
+  date: string;
+  created_at: string;
+}
+
+export interface Liability {
+  id: number;
+  title: string;
+  amount: number;
+  type: LiabilityType;
+  created_at: string;
+}
+
 export interface Measurement {
   id?: string | number;
   created_at: string;
@@ -128,4 +190,11 @@ export type DashboardData = {
       };
     }>;
   };
+  income: {
+    total: number;
+    changeFromPreviousPeriod: number;
+    direction: "up" | "down" | "stable";
+  };
+  netSavings: number;
+  savingsRate: number;
 };
