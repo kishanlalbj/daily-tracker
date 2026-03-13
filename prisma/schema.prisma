@@ -54,6 +54,13 @@ enum LiabilityType {
   other
 }
 
+enum GlucoseMeasurementType {
+  fasting
+  post_meal
+  random
+  bedtime
+}
+
 model User {
   id Int @id @default(autoincrement())
   first_name String
@@ -70,6 +77,8 @@ model User {
   last_login_at DateTime?
 
   healthTrackers     HealthTracker[]
+  bloodPressures     BloodPressure[]
+  bloodGlucoses      BloodGlucose[]
   expenseTrackers    ExpenseTracker[]
   recurringExpenses  RecurringExpense[]
   recurringIncomes   RecurringIncome[]
@@ -199,6 +208,29 @@ model Asset {
   userId     Int
   user       User      @relation(fields: [userId], references: [id])
   created_at DateTime  @default(now())
+}
+
+model BloodPressure {
+  id          Int      @id @default(autoincrement())
+  systolic    Int
+  diastolic   Int
+  pulse       Int?
+  notes       String?
+  measured_at DateTime
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  created_at  DateTime @default(now())
+}
+
+model BloodGlucose {
+  id               Int                    @id @default(autoincrement())
+  glucose_level    Decimal                @db.Decimal
+  measurement_type GlucoseMeasurementType
+  notes            String?
+  measured_at      DateTime
+  userId           Int
+  user             User                   @relation(fields: [userId], references: [id])
+  created_at       DateTime               @default(now())
 }
 
 model Liability {

@@ -37,6 +37,7 @@ yarn-error.log*
 .env
 .env.local
 .env.docker
+.env.prod
 
 # vercel
 .vercel
@@ -46,3 +47,4 @@ yarn-error.log*
 next-env.d.ts
 
 /generated/prisma
+settings.local.json

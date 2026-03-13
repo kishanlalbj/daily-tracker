@@ -73,7 +73,10 @@ export function ChartLineLinear({
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => format(new Date(value), "LLL dd")}
+              tickFormatter={(value) => {
+                const d = new Date(value);
+                return isNaN(d.getTime()) ? "" : format(d, "LLL dd");
+              }}
             />
             <ChartTooltip
               cursor={false}

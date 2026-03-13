@@ -1,5 +1,8 @@
 "use client";
 import {
+  ActivityIcon,
+  ChevronRight,
+  DropletIcon,
   GaugeIcon,
   HeartPulseIcon,
   IndianRupeeIcon,
@@ -12,6 +15,11 @@ import {
   UserIcon,
   WalletIcon
 } from "lucide-react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger
+} from "@/components/ui/collapsible";
 
 import {
   Sidebar,
@@ -42,7 +50,17 @@ const navGroups = [
   {
     label: "Health",
     items: [
-      { title: "Health Tracker", url: "/health-tracker", icon: HeartPulseIcon }
+      { title: "Health Tracker", url: "/health-tracker", icon: HeartPulseIcon },
+      {
+        title: "Blood Pressure Monitor",
+        url: "/health-tracker/blood-pressure",
+        icon: ActivityIcon
+      },
+      {
+        title: "Blood Glucose Monitor",
+        url: "/health-tracker/blood-glucose",
+        icon: DropletIcon
+      }
     ]
   },
   {
@@ -148,29 +166,52 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
       <SidebarContent className="py-1">
-        {navGroups.map((group) => (
-          <SidebarGroup key={group.label}>
-            <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {group.items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname === item.url}
-                      className="text-sm text-sidebar-foreground/70 font-medium data-[active=true]:font-semibold data-[active=true]:text-sidebar-foreground"
-                    >
-                      <Link href={item.url}>
-                        <item.icon scale={1.5} className="scale-120" />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
+        {navGroups.map((group) => {
+          const isGroupActive = group.items.some(
+            (item) =>
+              pathname === item.url || pathname.startsWith(item.url + "/")
+          );
+          return (
+            <SidebarGroup key={group.label}>
+              <Collapsible
+                defaultOpen={isGroupActive}
+                // Force open in icon-only mode so icons remain accessible
+                open={!open ? true : undefined}
+                className="group/collapsible"
+              >
+                <SidebarGroupLabel asChild>
+                  <CollapsibleTrigger className="flex w-full items-center">
+                    {group.label}
+                    <ChevronRight
+                      className="ml-auto h-3.5 w-3.5 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
+                      aria-hidden="true"
+                    />
+                  </CollapsibleTrigger>
+                </SidebarGroupLabel>
+                <CollapsibleContent>
+                  <SidebarGroupContent>
+                    <SidebarMenu>
+                      {group.items.map((item) => (
+                        <SidebarMenuItem key={item.title}>
+                          <SidebarMenuButton
+                            asChild
+                            isActive={pathname === item.url}
+                            className="text-sm text-sidebar-foreground/70 font-medium data-[active=true]:font-semibold data-[active=true]:text-sidebar-foreground"
+                          >
+                            <Link href={item.url}>
+                              <item.icon scale={1.5} className="scale-120" />
+                              <span>{item.title}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      ))}
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </CollapsibleContent>
+              </Collapsible>
+            </SidebarGroup>
+          );
+        })}
       </SidebarContent>
 
       <SidebarFooter className="border-t p-2 flex flex-col gap-1">
@@ -179,11 +220,6 @@ export function AppSidebar() {
           size="sm"
           className="w-full justify-start"
           onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-          aria-label={
-            resolvedTheme === "dark"
-              ? "Switch to light mode"
-              : "Switch to dark mode"
-          }
         >
           {resolvedTheme === "dark" ? (
             <SunIcon className="h-4 w-4" aria-hidden="true" />

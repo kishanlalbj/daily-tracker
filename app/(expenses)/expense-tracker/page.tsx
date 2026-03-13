@@ -293,7 +293,7 @@ const ExpenseTrackerPage = () => {
         header: "Amount",
         cell: ({ getValue }) => (
           <p className="tabular-nums text-destructive font-medium">
-            - ${formatCurrency(getValue() as number)}
+            - {formatCurrency(getValue() as number)}
           </p>
         )
       },

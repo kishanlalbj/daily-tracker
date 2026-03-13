@@ -107,6 +107,47 @@ export interface Liability {
   created_at: string;
 }
 
+export type GlucoseMeasurementType = "fasting" | "post_meal" | "random" | "bedtime";
+export type BPClassification =
+  | "Normal"
+  | "Elevated"
+  | "High Stage 1"
+  | "High Stage 2"
+  | "Hypertensive Crisis";
+export type GlucoseClassification = "Normal" | "Prediabetes" | "Diabetes" | "Concern";
+
+export interface BloodPressure {
+  id: number;
+  systolic: number;
+  diastolic: number;
+  pulse: number | null;
+  notes: string | null;
+  measured_at: string;
+  created_at: string;
+}
+
+export interface BloodGlucose {
+  id: number;
+  glucose_level: number;
+  measurement_type: GlucoseMeasurementType;
+  notes: string | null;
+  measured_at: string;
+  created_at: string;
+}
+
+export interface BPAverages {
+  systolic: number | null;
+  diastolic: number | null;
+  pulse: number | null;
+}
+
+export interface GlucoseAverages {
+  fasting: number | null;
+  post_meal: number | null;
+  random: number | null;
+  bedtime: number | null;
+}
+
 export interface Measurement {
   id?: string | number;
   created_at: string;

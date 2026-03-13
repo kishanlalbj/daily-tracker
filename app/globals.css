@@ -48,7 +48,7 @@
   --radius: 0.4rem;
 
   /* Surfaces — white cards on a subtle warm-gray canvas */
-  --background: oklch(0.95 0.003 145);
+  --background: lab(98 0 -0.01);
   --foreground: oklch(0.12 0.012 145);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.12 0.012 145);

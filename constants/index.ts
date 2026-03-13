@@ -16,5 +16,7 @@ export const paths = {
   BUDGET_API: `${BASE_API_URL}/budget`,
   GOALS_API: `${BASE_API_URL}/goals`,
   ASSETS_API: `${BASE_API_URL}/assets`,
-  LIABILITIES_API: `${BASE_API_URL}/liabilities`
+  LIABILITIES_API: `${BASE_API_URL}/liabilities`,
+  BLOOD_PRESSURE_API: `${BASE_API_URL}/blood-pressure`,
+  BLOOD_GLUCOSE_API: `${BASE_API_URL}/blood-glucose`
 };
